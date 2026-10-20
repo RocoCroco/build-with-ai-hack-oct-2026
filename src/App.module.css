@@ -1,0 +1,21 @@
+.shell {
+  position: relative;
+  max-width: 430px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--floor);
+}
+
+.screen {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 600px) {
+  .shell {
+    border-inline: 1px solid var(--surface);
+  }
+}

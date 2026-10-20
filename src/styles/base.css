@@ -1,0 +1,111 @@
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
+@import '@fontsource/barlow/600.css';
+@import '@fontsource/barlow-condensed/600.css';
+@import '@fontsource/barlow-condensed/700.css';
+
+:root {
+  /* Rubber-floor charcoal, chalk, and bumper-plate yellow */
+  --floor: #17181b;
+  --surface: #222429;
+  --raised: #2e3036;
+  --line: #3a3d44;
+  --chalk: #edebe6;
+  --chalk-dim: #a3a29e;
+  --plate: #f4c430;
+  --plate-ink: #1d1a10;
+
+  /* Plate colors, one per muscle group */
+  --plate-red: #e2463f;
+  --plate-blue: #3a6fd8;
+  --plate-yellow: #f4c430;
+  --plate-green: #3fa568;
+  --plate-white: #e6e4de;
+  --plate-orange: #ee8a3a;
+  --plate-violet: #9b6ce0;
+
+  --font-body: 'Barlow', system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+
+  color-scheme: dark;
+}
+
+[data-muscle='chest'] { --m: var(--plate-red); }
+[data-muscle='back'] { --m: var(--plate-blue); }
+[data-muscle='shoulders'] { --m: var(--plate-yellow); }
+[data-muscle='biceps'] { --m: var(--plate-green); }
+[data-muscle='triceps'] { --m: var(--plate-orange); }
+[data-muscle='abs'] { --m: var(--plate-white); }
+[data-muscle='legs'] { --m: var(--plate-violet); }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--floor);
+  color: var(--chalk);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--plate);
+  outline-offset: 3px;
+}
+
+/* Arrow-shaped Continue button, fixed on the middle right of the phone frame */
+.continue {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
+  width: 72px;
+  height: 64px;
+  padding: 0 0 0 var(--space-3);
+  border: none;
+  background: var(--plate);
+  color: var(--plate-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  clip-path: polygon(0 0, 62% 0, 100% 50%, 62% 100%, 0 100%);
+  text-align: left;
+}
+
+.continue:disabled {
+  background: var(--raised);
+  color: var(--chalk-dim);
+  cursor: default;
+}
+
+.primary {
+  border: none;
+  border-radius: 14px;
+  background: var(--plate);
+  color: var(--plate-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  padding: var(--space-3) var(--space-5);
+}

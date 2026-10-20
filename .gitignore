@@ -1,0 +1,12 @@
+/devpost/learner-profile.md
+.env
+.env.*
+!.env.example
+
+# Build and dependencies
+node_modules
+dist
+dist-ssr
+*.local
+*.log
+.DS_Store

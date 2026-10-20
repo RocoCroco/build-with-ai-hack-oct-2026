@@ -1,0 +1,121 @@
+/* Front view of a case: the lid is the top part, hinged along its top edge. */
+.case {
+  --w: 72px;
+  --h: 60px;
+  --lid: 24px;
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  perspective: 260px;
+}
+
+.case:disabled {
+  cursor: default;
+}
+
+/* Soft pulsing glow on cases that are ready to open */
+.case[data-state='ready'] {
+  animation: ready 1.8s ease-in-out infinite;
+}
+
+@keyframes ready {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(244 196 48 / 0);
+  }
+  50% {
+    box-shadow: 0 0 18px 3px rgb(244 196 48 / 0.45);
+  }
+}
+
+/* The box's walls around the opening, seen once the lid is up */
+.rim {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(var(--lid) + 2px);
+  border-radius: 10px 10px 0 0;
+  background: #33363c;
+}
+
+/* The opening, framed by the rim: dark while rolling, the muscle color once revealed */
+.inside {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  right: 6px;
+  height: calc(var(--lid) - 4px);
+  border-radius: 6px 6px 2px 2px;
+  background: #0c0d0f;
+  box-shadow: inset 0 5px 8px rgb(0 0 0 / 0.7);
+  transition: background 0.35s ease-out, box-shadow 0.35s ease-out;
+}
+
+/* Revealed: the opening fills with the group's color and light spills up out of the box */
+.case[data-state='revealed'] .inside {
+  background: var(--m);
+  box-shadow:
+    inset 0 5px 8px rgb(0 0 0 / 0.35),
+    0 -8px 18px -2px var(--m);
+}
+
+.body {
+  position: absolute;
+  inset: var(--lid) 0 0;
+  border-radius: 0 0 10px 10px;
+  background: var(--raised);
+  box-shadow: inset 0 -6px 0 var(--surface);
+}
+
+/* Closed: the lid's front face, hinged at its top edge so it tips back and away */
+.lidFront {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--lid);
+  border-radius: 10px 10px 0 0;
+  background: #393c43;
+  /* The seam: a dark line where the lid meets the body */
+  border-bottom: 2px solid #121316;
+  transform-origin: top center;
+}
+
+/* Open: the lid standing upright behind the case, hinged at its bottom edge.
+   Starts lying flat (rotateX 90°, edge-on, invisible) and rises up. Its bottom tucks
+   behind the rim so it looks attached at the hinge. */
+.lidTop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% - 6px);
+  height: 30px;
+  border-radius: 10px 10px 2px 2px;
+  background: linear-gradient(#2b2d33, #3f424a);
+  box-shadow: inset 0 -3px 0 #1a1b1f;
+  transform-origin: bottom center;
+}
+
+.latch {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--lid) - 6px);
+  width: 16px;
+  height: 12px;
+  translate: -50% 0;
+  border-radius: 3px;
+  background: var(--plate);
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.25);
+}
+
+.case[data-state='waiting'] .latch {
+  background: var(--chalk-dim);
+}
+
+/* Once open, the latch has popped and drops below the seam */
+.case[data-state='open'] .latch,
+.case[data-state='revealed'] .latch {
+  top: calc(var(--lid) + 4px);
+  background: var(--chalk-dim);
+}
