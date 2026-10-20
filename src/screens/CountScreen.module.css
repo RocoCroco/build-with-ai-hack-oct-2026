@@ -1,0 +1,50 @@
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-4) var(--continue-room);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.05;
+}
+
+/* Reels on the left, the lever on the right side of the machine */
+.cabinet {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  /* Room above for the arrow from the title */
+  margin-top: var(--space-3);
+}
+
+/* Sits in the gap between the title and the machine, ending just above the knob */
+.arrow {
+  position: absolute;
+  right: -6px;
+  bottom: calc(100% + 2px);
+  width: 120px;
+  height: 70px;
+  overflow: visible;
+}
+
+.arrow path {
+  fill: none;
+  stroke: var(--plate);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hint {
+  margin: 0;
+  min-height: 1.45em;
+  text-align: center;
+  color: var(--chalk-dim);
+}

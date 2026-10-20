@@ -27,8 +27,8 @@ PRD ref: `prd.md > The Core Journey`.
 3. **Muscles:** `MuscleScreen` / `BodyMap`: taps toggle groups in `muscles` (or set `fullyRandom`). Continue is enabled when at least one group is selected or random is on. Back returns to Time with choices kept.
 4. **Gym/Home:** `EquipmentScreen` / `NeonSwitch` sets `place: 'gym' | 'home'` and plays a click. Continue **locks the draw**: `planDraw()` runs once and computes the exercise total and the per-group counts. Back still works here; after Continue it doesn't.
 5. **Warm-up:** `WarmupScreen` asks `drawWarmup()` for a result (a warm-up or "No warm-up"), then `CaseRoll` animates to it.
-6. **Count:** `CountScreen` shows `SlotReels` animating each group's reel to its precomputed count (0 for dropped groups). Skipped when `fullyRandom`.
-7. **Cases:** `CasesScreen` goes group by group. Tapping a case calls `drawExercise(group, place, alreadyDrawn)`, then `CaseRoll` animates to the result. When all cases are revealed, Continue moves to the plan.
+6. **Count:** `CountScreen` shows `SlotReels`; pulling the lever animates each group's reel to its precomputed count (0 for dropped groups). Skipped when `fullyRandom`.
+7. **Cases:** `CasesScreen` goes group by group. Tapping a case calls `drawExercise(group, place, alreadyDrawn)`, then a `CaseRoll` row animates to the result; several cases can roll at once. When all cases are revealed, Continue moves to the plan.
 8. **Plan:** `PlanScreen` lists the warm-up plus each exercise with its sets × reps (picked within its ranges when drawn). **New Draw** resets the draw state and goes to Start.
 9. **Start over:** during steps 5–7, a small `MenuButton` resets the state and returns to Start.
 
@@ -64,10 +64,10 @@ To verify at the start of the build: install the current versions with `npm crea
 From `prd.md > Look and Feel`. The build should follow it without asking again.
 
 - **Overall:** simple, clean, smooth. Lots of space, one focal element per screen, minimal copy. Every interaction should feel physical (springs, not linear tweens).
-- **Shared baseline: dark.** A dark base (near-black / deep charcoal background, off-white text, one bright accent color for primary actions and selections). Workout apps read as dark, and the neon screen fits naturally. Dark is the baseline, not "everything black": cards and surfaces can use lighter charcoal layers. A clean sans-serif (e.g. Inter / system UI) and the same arrow-shaped Continue button on the middle right. This keeps the app coherent while each screen gets its own treatment.
+- **Shared baseline: dark.** A dark base (near-black / deep charcoal background, off-white text, one bright accent color for primary actions and selections). Workout apps read as dark, and the neon screen fits naturally. Dark is the baseline, not "everything black": cards and surfaces can use lighter charcoal layers. A clean sans-serif (e.g. Inter / system UI) and the same arrow-shaped Continue button at the bottom right (top right on the cases screen, where the cases own the bottom). This keeps the app coherent while each screen gets its own treatment.
 - **Per-screen treatments (intentionally different):**
   - **Time wheel:** big circular dial, arrow at the top, a large tabular-number readout that ticks as you rotate.
-  - **Body map:** front/back silhouette; selected groups fill with the accent color with a small spring "pop."
+  - **Body map:** front/back silhouette; selected groups fill with their own plate color (the same per-group colors used on reels, cases, and the plan) with a small spring "pop." Name chips under the map mirror it.
   - **Neon switch:** the one screen that goes full neon on the dark base. GYM and HOME neon tubes (glow with `text-shadow`), the inactive one off, and the active one flickering on like an old sign. A chunky toggle with a click sound.
   - **Rolls:** a horizontal case-opening strip with a center marker, fast at first and easing to a stop with a slight overshoot. Vertical slot reels for the counts.
   - **Plan:** a clean card list, with the results animating in one after another.
@@ -117,11 +117,11 @@ A reusable horizontal strip. Given the `result` and a pool, it builds ~40 random
 PRD ref: `prd.md > Warm-up Roll`, `prd.md > Exercise Case Openings`.
 
 ### SlotReels / CountScreen
-One vertical reel per chosen group, labeled with the group name. Each spins and stops on its precomputed count (0–N), staggered left to right.
+One vertical reel per chosen group, labeled with the group name. Reels size to the screen (one big reel for a single group, two rows of small ones for many). They show "?" until you pull the `Lever` on the machine's side (a curved arrow from the title points at it); the pull animates the knob down past its pivot with a ratchet-and-clunk sound, the knob can also be dragged down by hand, then each reel spins and stops on its precomputed count (0–N), staggered left to right.
 PRD ref: `prd.md > Count Slot Machine`.
 
 ### CasesScreen
-Shows the current group's closed cases (`CaseTile`: lid seam with latch; ready cases pulse with a soft glow). Tapping one draws the result and opens the lid like a chest hinged at the back (front face tips away, lid rises upright behind the case, ~0.45 s), then starts `CaseRoll`; on landing the lid fades away and the open case's inside fills with the muscle group's plate color. It then advances to the next group, or to the Plan once all are revealed. In fully random mode it shows N cases drawing from `'any'`.
+Shows the current group's closed cases (`CaseTile`: lid seam with latch; ready cases pulse with a soft glow). Tapping one draws the result and opens the lid like a chest hinged at the back (front face tips away, lid rises upright behind the case, ~0.45 s), then gives it its own `CaseRoll` row. Cases can be opened while others are still rolling; rows grow to fill the space and shrink (down to one-line rows) as more roll at once; on landing the lid fades away and the open case's inside fills with the muscle group's plate color. Once every case in the group has landed, Go advances to the next group, or to the Plan. In fully random mode it shows N cases drawing from `'any'`.
 PRD ref: `prd.md > Exercise Case Openings`.
 
 ### PlanScreen
@@ -184,7 +184,7 @@ build-with-ai-hack-oct-2026/
 │   │   ├── draw.test.ts      # Vitest: totals, dropping, no repeats, home=bodyweight
 │   │   ├── drawState.ts      # DrawState type, actions, and the reducer App uses
 │   │   ├── timeWheel.ts      # angle ↔ minutes mapping
-│   │   └── sound.ts          # Web Audio: roll tick, land chime, dial ratchet, switch click
+│   │   └── sound.ts          # Web Audio: roll tick, land chime, dial ratchet, reel clunk, lever pull, switch click
 │   └── screens/
 │       ├── StartScreen.tsx (+ .module.css)
 │       ├── TimeScreen.tsx  + TimeWheel.tsx

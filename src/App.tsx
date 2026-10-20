@@ -2,7 +2,10 @@ import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useReducer } from 'react';
 import styles from './App.module.css';
 import { drawReducer, initialState } from './lib/drawState';
+import { unlockAudio } from './lib/sound';
 import { CasesScreen } from './screens/CasesScreen';
+import { CountScreen } from './screens/CountScreen';
+import { MuscleScreen } from './screens/MuscleScreen';
 import { PlanScreen } from './screens/PlanScreen';
 import { StartScreen } from './screens/StartScreen';
 import { TimeScreen } from './screens/TimeScreen';
@@ -14,6 +17,10 @@ export default function App() {
     switch (state.step) {
       case 'time':
         return <TimeScreen state={state} dispatch={dispatch} />;
+      case 'muscles':
+        return <MuscleScreen state={state} dispatch={dispatch} />;
+      case 'count':
+        return <CountScreen state={state} dispatch={dispatch} />;
       case 'cases':
         return <CasesScreen state={state} dispatch={dispatch} />;
       case 'plan':
@@ -27,7 +34,8 @@ export default function App() {
     // Animations always play, even with the OS "reduce motion" setting on (learner decision).
     // A manual toggle can come later with the settings menu.
     <MotionConfig reducedMotion="never">
-      <div className={styles.shell}>
+      {/* Any tap unlocks audio, so sounds that play later (reels, rolls) are allowed. */}
+      <div className={styles.shell} onPointerDown={unlockAudio}>
         {/* AnimatePresence stays mounted; each screen is keyed by its step. */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.main

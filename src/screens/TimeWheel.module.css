@@ -1,7 +1,7 @@
 .dial {
   display: block;
   /* Big, but small enough on short phones that its right edge clears the Continue arrow */
-  width: min(300px, 76vw, 40dvh);
+  width: min(340px, 84vw, 46dvh);
   height: auto;
   touch-action: none; /* dragging the dial must not scroll the page */
   cursor: grab;

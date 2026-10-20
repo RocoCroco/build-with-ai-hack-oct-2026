@@ -1,0 +1,58 @@
+.lever {
+  position: relative;
+  flex: none;
+  width: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  /* The lever can be dragged down, so the page mustn't scroll under the finger */
+  touch-action: none;
+}
+
+.lever:disabled {
+  cursor: default;
+}
+
+/* The block the lever is mounted on, against the side of the machine */
+.housing {
+  position: absolute;
+  left: 0;
+  width: 26px;
+  height: 40px;
+  border-radius: 4px 10px 10px 4px;
+  background: var(--raised);
+  box-shadow: inset 0 0 0 2px var(--line);
+}
+
+.rod {
+  position: absolute;
+  left: 50%;
+  width: 8px;
+  translate: -50% 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #8d8f94, var(--chalk) 45%, #8d8f94);
+}
+
+.knob {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff8a80, var(--plate-red) 55%, #9e2a24);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.5);
+}
+
+/* Glows while it's waiting to be pulled */
+.knob[data-ready] {
+  animation: ready 1.6s ease-in-out infinite;
+}
+
+@keyframes ready {
+  0%,
+  100% {
+    box-shadow: 0 3px 6px rgb(0 0 0 / 0.5), 0 0 0 0 rgb(226 70 63 / 0);
+  }
+  50% {
+    box-shadow: 0 3px 6px rgb(0 0 0 / 0.5), 0 0 16px 4px rgb(226 70 63 / 0.55);
+  }
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { EXERCISES, MUSCLES } from '../data/exercises';
-import { drawExercise, poolFor, type DrawnExercise } from './draw';
+import { EXERCISES, MUSCLES, type Muscle } from '../data/exercises';
+import { drawExercise, planCounts, poolFor, shuffle, type DrawnExercise } from './draw';
 
 function drawMany(count: number, group: Parameters<typeof drawExercise>[0], place: 'gym' | 'home') {
   const drawn: DrawnExercise[] = [];
@@ -17,6 +17,56 @@ describe('exercise data', () => {
     for (const m of MUSCLES) {
       expect(poolFor(m, 'gym').length).toBeGreaterThanOrEqual(8);
       expect(poolFor(m, 'home').length).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
+
+const sum = (counts: Record<string, number>) => Object.values(counts).reduce((a, b) => a + b, 0);
+
+describe('planCounts', () => {
+  it('always sums to the total', () => {
+    for (let run = 0; run < 300; run++) {
+      const groups = shuffle(MUSCLES).slice(0, 1 + (run % 7));
+      for (const total of [3, 4, 5, 6, 7, 8]) {
+        const counts = planCounts(groups, total, 'gym');
+        expect(sum(counts)).toBe(total);
+        expect(Object.keys(counts).sort()).toEqual([...groups].sort());
+      }
+    }
+  });
+
+  it('drops groups at random when there are more groups than exercises', () => {
+    const kept = new Set<string>();
+    for (let run = 0; run < 300; run++) {
+      const counts = planCounts(MUSCLES, 3, 'gym'); // 7 groups at 15 min
+      const values = Object.values(counts);
+      expect(values.filter((v) => v === 1)).toHaveLength(3);
+      expect(values.filter((v) => v === 0)).toHaveLength(4);
+      for (const [g, v] of Object.entries(counts)) if (v) kept.add(g);
+    }
+    expect(kept.size).toBe(7); // every group gets kept sometimes
+  });
+
+  it('gives every group at least one when there is room', () => {
+    for (let run = 0; run < 200; run++) {
+      const counts = planCounts(['chest', 'legs'], 6, 'gym');
+      expect(counts.chest).toBeGreaterThanOrEqual(1);
+      expect(counts.legs).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('never repeats an exercise across a whole draw', () => {
+    for (let run = 0; run < 200; run++) {
+      const counts = planCounts(['chest', 'back', 'legs'], 8, 'gym');
+      const drawn: DrawnExercise[] = [];
+      for (const [g, n] of Object.entries(counts)) {
+        for (let i = 0; i < n; i++) {
+          const d = drawExercise(g as Muscle, 'gym', drawn);
+          expect(d).not.toBeNull();
+          drawn.push(d!);
+        }
+      }
+      expect(new Set(drawn.map((d) => d.exercise.id)).size).toBe(8);
     }
   });
 });

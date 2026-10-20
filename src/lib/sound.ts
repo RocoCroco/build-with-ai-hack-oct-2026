@@ -68,10 +68,38 @@ export function playDial(amount: number) {
   source.stop(now + 0.03);
 }
 
+/** A short low clunk when a slot reel locks on its number. */
+export function playReelStop() {
+  if (!ctx || ctx.state !== 'running') return;
+  const now = ctx.currentTime;
+  tone(330, now, 0.18, 0.14, 'triangle');
+  tone(165, now, 0.12, 0.1, 'square');
+}
+
 /** A bright two-note chime when the roll lands. */
 export function playLand() {
   if (!ctx || ctx.state !== 'running') return;
   const now = ctx.currentTime;
   tone(988, now, 0.5, 0.12, 'triangle');
   tone(1480, now + 0.08, 0.7, 0.1, 'triangle');
+}
+
+/** One notch of the slot lever's ratchet; `depth` (0–1) lowers the pitch as it goes down. */
+export function playLeverNotch(depth: number, delay = 0) {
+  if (!ctx || ctx.state !== 'running') return;
+  tone(700 - depth * 240, ctx.currentTime + delay, 0.025, 0.06, 'square');
+}
+
+/** The heavy clunk when the slot lever hits the bottom. */
+export function playLeverClunk(delay = 0) {
+  if (!ctx || ctx.state !== 'running') return;
+  const start = ctx.currentTime + delay;
+  tone(110, start, 0.22, 0.2, 'triangle');
+  tone(220, start, 0.1, 0.08, 'square');
+}
+
+/** A whole tapped pull: a quick ratchet down, then the clunk. */
+export function playLever() {
+  for (let i = 0; i < 5; i++) playLeverNotch(i / 4, i * 0.05);
+  playLeverClunk(0.27);
 }

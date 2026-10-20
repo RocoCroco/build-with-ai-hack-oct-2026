@@ -1,7 +1,9 @@
 .viewport {
   position: relative;
   width: 100%;
-  padding: var(--space-4) 0;
+  /* Row size comes from the cases screen, which shrinks rows as more cases roll at once */
+  padding: var(--roll-pad, 24px) 0;
+  transition: padding 0.25s ease-out;
   overflow: hidden;
   /* Items fade out toward the edges so the eye stays on the marker */
   mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
@@ -15,7 +17,8 @@
 
 .item {
   flex: none;
-  height: 112px;
+  height: var(--item-h, 112px);
+  transition: height 0.25s ease-out;
   display: flex;
   align-items: flex-end;
   padding: var(--space-3) var(--space-3) calc(var(--space-3) + 6px);
@@ -42,12 +45,26 @@
 .label {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 18px;
+  font-size: clamp(14px, calc(var(--item-h, 112px) * 0.17), 18px);
   line-height: 1.1;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Short rows: name on one line, centered, with a thinner color bar */
+:global([data-compact]) .item {
+  align-items: center;
+  padding: 0 10px 3px;
+}
+
+:global([data-compact]) .item::after {
+  height: 4px;
+}
+
+:global([data-compact]) .label {
+  -webkit-line-clamp: 1;
 }
 
 .marker {

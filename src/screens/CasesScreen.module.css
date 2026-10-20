@@ -1,15 +1,14 @@
 .screen {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  /* Strip above the middle, cases below it: the Continue arrow covers neither */
-  justify-content: flex-start;
-  gap: var(--space-4);
-  padding: var(--space-6) 0 var(--space-5);
+  gap: var(--space-3);
+  /* The Go arrow sits top right once the round is done; the header stays centered and short */
+  padding: var(--space-5) 0 var(--space-4);
 }
 
 .header,
-.result,
 .hint {
   padding: 0 var(--space-4);
   text-align: center;
@@ -21,41 +20,42 @@
   font-weight: 700;
   font-size: 34px;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
+  color: var(--m, var(--chalk));
+}
+
+/* Exactly one screen tall, so more rolling rows shrink instead of pushing the cases off screen */
+.round {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 .sub {
   margin: var(--space-1) 0 0;
   color: var(--chalk-dim);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
 }
 
-.result {
-  min-height: 64px;
-}
-
-.resultName {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 26px;
-  line-height: 1.1;
-}
-
-.resultMeta {
-  margin: var(--space-1) 0 0;
-  color: var(--m);
-  font-weight: 600;
+/* Every open case gets a row here; rows shrink so they all fit (sizes set from the component) */
+.rolls {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--row-gap);
+  overflow: hidden;
 }
 
 .cases {
   /* Cases sit at the bottom, in thumb reach */
-  margin-top: auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   /* Row gap leaves headroom for the lids swinging up */
   gap: var(--space-5) var(--space-3);
-  padding: var(--space-4) var(--space-4) 0;
+  padding: var(--space-5) var(--space-4) 0;
 }
 
 .hint {

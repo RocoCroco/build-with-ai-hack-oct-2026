@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-4);
-  padding: var(--space-6) var(--space-4) var(--space-5);
+  padding: var(--space-6) var(--space-4) var(--continue-room);
 }
 
 .title {
@@ -16,9 +16,10 @@
   line-height: 1.05;
 }
 
+/* Auto margins on the wheel and hint center the pair in the space below the title */
 .wheel {
   position: relative;
-  margin-top: var(--space-3);
+  margin-top: auto;
 }
 
 /* The number sits in the middle of the dial and ticks as you turn */
@@ -50,7 +51,7 @@
 }
 
 .hint {
-  margin: 0;
+  margin: 0 0 auto;
   color: var(--chalk-dim);
   font-size: 18px;
 }

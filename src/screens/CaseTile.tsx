@@ -2,7 +2,7 @@ import { motion, type Variants } from 'motion/react';
 import type { Muscle } from '../data/exercises';
 import styles from './CaseTile.module.css';
 
-export type CaseState = 'ready' | 'waiting' | 'open' | 'revealed';
+export type CaseState = 'ready' | 'open' | 'revealed';
 
 interface Props {
   state: CaseState;

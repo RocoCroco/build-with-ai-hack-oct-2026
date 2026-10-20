@@ -29,7 +29,7 @@ Build mode: learn
   Learner check: Drag the wheel around, watch the time tick, and try Continue at 0 and then at around 1 h. Does the dial feel physical, and do you get the number of cases you'd expect?
   Commit: `Add time wheel that sets the exercise count`
 
-- [ ] **3. Pick muscle groups, watch the slot machine split the count, open cases group by group**
+- [x] **3. Pick muscle groups, watch the slot machine split the count, open cases group by group**
   Becomes usable: Start → Time → Body map (or Fully random) → Count slot reels → Cases for each group in turn → Plan. Too many groups for the time means some reels land on 0 and those groups get no cases. Back works on the setup screens.
   Why now: This is the second layer of the reveal (count, then exercises) and holds the most draw rules (`planCounts`, dropping groups). It needs the time from slice 2.
   PRD ref: `prd.md > Muscle Group Body Map`, `prd.md > Count Slot Machine`, `prd.md > Exercise Case Openings`, `prd.md > Product Decisions`
@@ -91,3 +91,6 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Roll curve changed to a steady ease-out quad over 5.2 s with a longer strip — the steep curve crawled inside the last card for ~1.5 s, so ticks went silent while it was visibly slowing (learner feedback).
 - Cases became `CaseTile` with a lid seam, ready glow, and a lid that opens before the roll; the inside shows the muscle color only after landing so it doesn't spoil the result (learner feedback). `spec.md > Components > CasesScreen` updated.
 - Time wheel plays a ratchet click (`playDial`) per minute, pitch rising with the time — added during slice 2 and approved by the learner over reusing the roll tick. Until slices 3–4 exist, Time's Continue locks a fully random gym draw directly.
+- Body map fills selected groups with their plate color instead of the single accent, with name chips under the map — keeps one color language across map, reels, cases, and plan, and makes the abstract shapes unambiguous. `spec.md > Look and Feel` updated. Until slice 4, the Muscles screen's Continue locks the draw (gym).
+- `planCounts` already caps each group at its pool size (needed for Home in slice 4); slot reels play a low clunk (`playReelStop`) as each reel locks.
+- Slice 3 learner feedback: Go arrow moved to the bottom right on every screen except the cases (top right there); bigger body map; slot reels size to fit the screen and wait for a `Lever` pull (curved arrow from the title, `playLever` sound); cases can be opened while others roll, each with its own row that shrinks as more roll at once — "should feel more fun and entertaining." `spec.md > Look and Feel`, `Components` (SlotReels / CountScreen, CasesScreen), and the core journey updated. Follow-up: the time wheel is bigger and centered in the free space, and the lever can be dragged down (ratchet click per notch; letting go past 60% still counts) as well as tapped.

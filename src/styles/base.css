@@ -34,16 +34,20 @@
   --space-5: 40px;
   --space-6: 64px;
 
+  /* Bottom padding that keeps content clear of the Continue arrow */
+  --continue-room: 96px;
+
   color-scheme: dark;
 }
 
-[data-muscle='chest'] { --m: var(--plate-red); }
-[data-muscle='back'] { --m: var(--plate-blue); }
-[data-muscle='shoulders'] { --m: var(--plate-yellow); }
-[data-muscle='biceps'] { --m: var(--plate-green); }
-[data-muscle='triceps'] { --m: var(--plate-orange); }
-[data-muscle='abs'] { --m: var(--plate-white); }
-[data-muscle='legs'] { --m: var(--plate-violet); }
+/* --m is the group's plate color; --m-ink is readable text on top of it */
+[data-muscle='chest'] { --m: var(--plate-red); --m-ink: var(--plate-ink); }
+[data-muscle='back'] { --m: var(--plate-blue); --m-ink: var(--chalk); }
+[data-muscle='shoulders'] { --m: var(--plate-yellow); --m-ink: var(--plate-ink); }
+[data-muscle='biceps'] { --m: var(--plate-green); --m-ink: var(--plate-ink); }
+[data-muscle='triceps'] { --m: var(--plate-orange); --m-ink: var(--plate-ink); }
+[data-muscle='abs'] { --m: var(--plate-white); --m-ink: var(--plate-ink); }
+[data-muscle='legs'] { --m: var(--plate-violet); --m-ink: var(--chalk); }
 
 *,
 *::before,
@@ -74,12 +78,11 @@ button {
   outline-offset: 3px;
 }
 
-/* Arrow-shaped Continue button, fixed on the middle right of the phone frame */
+/* Arrow-shaped Continue button, bottom right of the phone frame (screens leave room for it) */
 .continue {
   position: absolute;
   right: 0;
-  top: 50%;
-  translate: 0 -50%;
+  bottom: var(--space-3);
   width: 72px;
   height: 64px;
   padding: 0 0 0 var(--space-3);
@@ -91,6 +94,12 @@ button {
   font-size: 15px;
   clip-path: polygon(0 0, 62% 0, 100% 50%, 62% 100%, 0 100%);
   text-align: left;
+}
+
+/* On the cases screen the cases own the bottom, so the arrow moves to the top right */
+.continue[data-at='top'] {
+  top: var(--space-3);
+  bottom: auto;
 }
 
 .continue:disabled {
