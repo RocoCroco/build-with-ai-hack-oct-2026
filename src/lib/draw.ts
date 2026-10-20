@@ -1,4 +1,4 @@
-import { EXERCISES, WARMUPS, type Exercise, type Muscle, type Place, type Warmup } from '../data/exercises';
+import { EXERCISES, WARMUPS, type Exercise, type Muscle, type Place, type Warmup, type Where } from '../data/exercises';
 
 export interface DrawnExercise {
   exercise: Exercise;
@@ -9,8 +9,16 @@ export interface DrawnExercise {
 export type Group = Muscle | 'any';
 
 /** The warm-up roll: any warm-up, or "No warm-up", each equally likely. */
-export function drawWarmup(): Warmup | 'none' {
-  return pick<Warmup | 'none'>([...WARMUPS, 'none']);
+export function fitsPlace(where: Where, place: Place): boolean {
+  return where === 'any' || where === place;
+}
+
+export function warmupsFor(place: Place): Warmup[] {
+  return WARMUPS.filter((w) => fitsPlace(w.where, place));
+}
+
+export function drawWarmup(place: Place): Warmup | 'none' {
+  return pick<Warmup | 'none'>([...warmupsFor(place), 'none']);
 }
 
 export function randomInt(min: number, max: number): number {
@@ -32,10 +40,10 @@ export function exerciseCountFor(minutes: number): number {
   return 8;
 }
 
-/** Every exercise that fits the group and place (Home = bodyweight only). */
+/** Every exercise that fits the group and place (Home = no equipment; Gym skips home workarounds). */
 export function poolFor(group: Group, place: Place): Exercise[] {
   return EXERCISES.filter(
-    (e) => (group === 'any' || e.muscle === group) && (place === 'gym' || e.bodyweight),
+    (e) => (group === 'any' || e.muscle === group) && fitsPlace(e.where, place),
   );
 }
 

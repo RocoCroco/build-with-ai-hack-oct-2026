@@ -63,7 +63,7 @@ Front/back body silhouette with tappable groups: **chest, back, shoulders, bicep
 
 ### Gym / Home Switch
 Two neon signs (GYM top, HOME bottom) and a switch. The active one is lit; the other is off. Flipping plays a click sound and a flicker animation.
-- **Gym:** any exercise in the list. **Home:** bodyweight only.
+- **Gym:** equipment exercises plus good bodyweight moves, but not home workarounds (like a towel door curl). **Home:** bodyweight only. The warm-up follows the same rule.
 - [ ] Flipping the switch lights one sign, turns the other off, and plays a click.
 - [ ] Choosing Home means only bodyweight exercises can appear in any roll.
 

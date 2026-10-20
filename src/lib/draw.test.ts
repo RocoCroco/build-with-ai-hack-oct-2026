@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EXERCISES, MUSCLES, WARMUPS, type Muscle } from '../data/exercises';
-import { drawExercise, drawWarmup, planCounts, poolFor, shuffle, type DrawnExercise } from './draw';
+import { drawExercise, drawWarmup, planCounts, poolFor, shuffle, warmupsFor, type DrawnExercise } from './draw';
 
 function drawMany(count: number, group: Parameters<typeof drawExercise>[0], place: 'gym' | 'home') {
   const drawn: DrawnExercise[] = [];
@@ -105,11 +105,18 @@ describe('drawExercise', () => {
 });
 
 describe('home (bodyweight only)', () => {
-  it('only ever draws bodyweight exercises', () => {
+  it('only ever draws exercises that need no equipment', () => {
     for (let run = 0; run < 200; run++) {
-      for (const d of drawMany(8, 'any', 'home')) expect(d.exercise.bodyweight).toBe(true);
-      for (const m of MUSCLES) for (const d of drawMany(2, m, 'home')) expect(d.exercise.bodyweight).toBe(true);
+      for (const d of drawMany(8, 'any', 'home')) expect(d.exercise.where).not.toBe('gym');
+      for (const m of MUSCLES) for (const d of drawMany(2, m, 'home')) expect(d.exercise.where).not.toBe('gym');
     }
+  });
+
+  it('keeps home workarounds out of the gym, but good bodyweight moves in', () => {
+    const gym = poolFor('any', 'gym');
+    expect(gym.some((e) => e.where === 'home')).toBe(false);
+    expect(gym.map((e) => e.id)).toContain('push-up');
+    expect(gym.map((e) => e.id)).not.toContain('towel-curl');
   });
 
   it('never gives a group more cases than it has home exercises, shrinking the total if it must', () => {
@@ -135,8 +142,16 @@ describe('home (bodyweight only)', () => {
 
 describe('drawWarmup', () => {
   it('can land on a warm-up or on "No warm-up"', () => {
-    const results = Array.from({ length: 300 }, drawWarmup);
+    const results = Array.from({ length: 300 }, () => drawWarmup('gym'));
     expect(results).toContain('none');
     expect(results.some((r) => r !== 'none' && WARMUPS.includes(r))).toBe(true);
+  });
+
+  it('never gives a machine or band warm-up at home', () => {
+    expect(warmupsFor('home').every((w) => w.where === 'any')).toBe(true);
+    for (let run = 0; run < 300; run++) {
+      const r = drawWarmup('home');
+      if (r !== 'none') expect(r.where).toBe('any');
+    }
   });
 });

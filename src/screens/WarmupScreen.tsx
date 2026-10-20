@@ -1,6 +1,6 @@
 import { useState, type Dispatch } from 'react';
-import { WARMUPS, type Warmup } from '../data/exercises';
-import { drawWarmup } from '../lib/draw';
+import type { Warmup } from '../data/exercises';
+import { drawWarmup, warmupsFor } from '../lib/draw';
 import type { Action, DrawState } from '../lib/drawState';
 import { unlockAudio } from '../lib/sound';
 import { CaseRoll, type RollItem } from './CaseRoll';
@@ -15,7 +15,6 @@ interface Props {
 
 // The gold card. Same odds as each warm-up; it just looks like the rare one.
 const NONE: RollItem = { id: 'none', label: 'No warm-up', gold: true };
-const POOL: RollItem[] = [...WARMUPS.map((w) => ({ id: w.id, label: w.name })), NONE];
 
 function toItem(warmup: Warmup | 'none'): RollItem {
   return warmup === 'none' ? NONE : { id: warmup.id, label: warmup.name };
@@ -27,11 +26,12 @@ export function WarmupScreen({ state, dispatch }: Props) {
   const [rolling, setRolling] = useState(false);
   const [landed, setLanded] = useState(false);
   const { warmup } = state;
+  const pool: RollItem[] = [...warmupsFor(state.place).map((w) => ({ id: w.id, label: w.name })), NONE];
 
   function open() {
     if (warmup) return;
     unlockAudio();
-    dispatch({ type: 'revealWarmup', warmup: drawWarmup() });
+    dispatch({ type: 'revealWarmup', warmup: drawWarmup(state.place) });
   }
 
   let hint = 'Tap the case to open it';
@@ -48,9 +48,9 @@ export function WarmupScreen({ state, dispatch }: Props) {
 
         <div className={styles.rolls}>
           {rolling && warmup ? (
-            <CaseRoll key="roll" pool={POOL} result={toItem(warmup)} onDone={() => setLanded(true)} />
+            <CaseRoll key="roll" pool={pool} result={toItem(warmup)} onDone={() => setLanded(true)} />
           ) : (
-            <CaseRoll key="idle" pool={POOL} result={null} />
+            <CaseRoll key="idle" pool={pool} result={null} />
           )}
         </div>
 

@@ -66,6 +66,8 @@ Build mode: learn
 
 ## Final Review
 
+- [ ] Warm-up respects gym/home: machine, rope and band warm-ups only at the gym (learner found Rowing machine etc. at home)
+- [ ] Gym drops home workarounds (Towel door curl, Loaded backpack curl, Inverted table row) but keeps good bodyweight moves; Concentration curl added so gym biceps still has 8
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
@@ -99,3 +101,4 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - "No warm-up" is a gold card in the warm-up roll (and the case fills gold when it lands there), same odds as each warm-up — learner request.
 - Added the "Reduce animations" toggle to the corner menu, moved in from the deferred list at the learner's request (`prd.md > Deferred From the POC` named a skip/fast-animations setting). When on, rolls slide onto the result in 0.6 s, reels stop in under 1 s, and flicker/pulse/slide effects stop; sounds stay. Saved in this browser only. The menu now also shows on Start and Plan (setting only; Start over stays on the roll screens).
 - Layout made consistent (learner request): the menu sits top right on every screen and Go is always bottom right, including the warm-up and cases screens, which now leave bottom room for it under the cases.
+- Final review: the bodyweight yes/no flag became a `where` tag (gym / home / any) on exercises and warm-ups, so Home and Gym each filter the right way, and the warm-up now follows the place too.

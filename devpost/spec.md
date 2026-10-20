@@ -10,7 +10,7 @@ Workout Draw is a **website that runs entirely in the phone's browser**. There's
 
 It has three kinds of pieces:
 1. **Screens.** Each step of the journey (Start, Time, Muscles, Gym/Home, Warm-up, Count, Cases, Plan) is its own React component. One screen shows at a time, with an animated transition between them.
-2. **The exercise list.** A plain data file inside the code, listing every exercise with its muscle group, whether it's bodyweight, and its sets/reps ranges. Think of it as a spreadsheet baked into the app.
+2. **The exercise list.** A plain data file inside the code, listing every exercise with its muscle group, where it belongs (gym, home, or either), and its sets/reps ranges. Think of it as a spreadsheet baked into the app.
 3. **The draw logic.** A few small functions that decide the random results: how many exercises your time gives you, how many each group gets, which exercise each case lands on (never repeating), and the sets/reps for each.
 
 The key trick: **the result is decided *before* each animation plays.** When you tap a case, the draw logic picks the exercise first. Then the animation builds a strip of random exercises with the real result placed at the spot where the strip will stop. The animation is pure show; the logic is simple and testable. The same goes for the slot reels and the warm-up roll.
@@ -93,7 +93,7 @@ Pure functions with no UI:
 PRD ref: `prd.md > Count Slot Machine`, `prd.md > Exercise Case Openings`, `prd.md > Warm-up Roll`, `prd.md > Workout Plan`, `prd.md > Gym / Home Switch`.
 
 ### Exercise Data (`data/exercises.ts`)
-A curated list compiled by the agent (delegated by the learner). Each of the 7 groups gets plenty of gym exercises and as many bodyweight ones as make sense, plus a warm-up list. The learner can review it.
+A curated list compiled by the agent (delegated by the learner). Each of the 7 groups gets plenty of gym exercises and as many bodyweight ones as make sense, plus a warm-up list. Each exercise and warm-up is tagged `gym` (needs equipment), `home` (a workaround you would skip at a gym, like a towel door curl), or `any` (a good bodyweight move anywhere). The learner can review it.
 PRD ref: `prd.md > Open Questions` (exercise list content).
 
 ### StartScreen
@@ -140,14 +140,15 @@ PRD ref: `prd.md > Start Over (during rolls)`.
 ```ts
 type Muscle = 'chest' | 'back' | 'shoulders' | 'biceps' | 'triceps' | 'abs' | 'legs';
 type Place = 'gym' | 'home';
+type Where = Place | 'any';       // 'any' fits both places
 
 interface Exercise {
   id: string; name: string; muscle: Muscle;
-  bodyweight: boolean;            // true → allowed at home
+  where: Where;
   sets: [min: number, max: number];
   reps: [min: number, max: number];
 }
-interface Warmup { id: string; name: string; }   // plus a special "No warm-up"
+interface Warmup { id: string; name: string; where: Where; }   // plus a special "No warm-up"
 
 interface DrawnExercise { exercise: Exercise; sets: number; reps: number; }
 
@@ -185,7 +186,7 @@ build-with-ai-hack-oct-2026/
 │   │   └── exercises.ts      # exercise list + warm-ups (curated)
 │   ├── lib/
 │   │   ├── draw.ts           # exerciseCountFor, planCounts, drawWarmup, drawExercise
-│   │   ├── draw.test.ts      # Vitest: totals, dropping, no repeats, home=bodyweight
+│   │   ├── draw.test.ts      # Vitest: totals, dropping, no repeats, home=no equipment, gym=no home workarounds
 │   │   ├── drawState.ts      # DrawState type, actions, and the reducer App uses
 │   │   ├── timeWheel.ts      # angle ↔ minutes mapping
 │   │   └── sound.ts          # Web Audio: roll tick, land chime, dial ratchet, reel clunk, lever pull, switch click
