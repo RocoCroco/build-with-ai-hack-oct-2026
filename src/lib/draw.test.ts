@@ -103,3 +103,32 @@ describe('drawExercise', () => {
     expect(drawExercise('biceps', 'home', drawn)).toBeNull();
   });
 });
+
+describe('home (bodyweight only)', () => {
+  it('only ever draws bodyweight exercises', () => {
+    for (let run = 0; run < 200; run++) {
+      for (const d of drawMany(8, 'any', 'home')) expect(d.exercise.bodyweight).toBe(true);
+      for (const m of MUSCLES) for (const d of drawMany(2, m, 'home')) expect(d.exercise.bodyweight).toBe(true);
+    }
+  });
+
+  it('never gives a group more cases than it has home exercises, shrinking the total if it must', () => {
+    const pool = poolFor('biceps', 'home').length + poolFor('triceps', 'home').length;
+    expect(pool).toBeLessThan(8); // the case this guards: too few bodyweight arm exercises for 2 h
+    for (let run = 0; run < 200; run++) {
+      const counts = planCounts(['biceps', 'triceps'], 8, 'home');
+      expect(counts.biceps).toBeLessThanOrEqual(poolFor('biceps', 'home').length);
+      expect(counts.triceps).toBeLessThanOrEqual(poolFor('triceps', 'home').length);
+      expect(sum(counts)).toBe(pool);
+      // Every counted case can actually be drawn.
+      const drawn: DrawnExercise[] = [];
+      for (const [g, n] of Object.entries(counts)) {
+        for (let i = 0; i < n; i++) {
+          const d = drawExercise(g as Muscle, 'home', drawn);
+          expect(d).not.toBeNull();
+          drawn.push(d!);
+        }
+      }
+    }
+  });
+});

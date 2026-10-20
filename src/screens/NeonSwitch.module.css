@@ -1,0 +1,133 @@
+/* The one neon screen in the app. Each sign has its own tube color. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.sign {
+  --neon: #ff4f7b;
+  --core: #ffe3ea;
+  position: relative;
+  isolation: isolate;
+  padding: 0 var(--space-3);
+  border: none;
+  background: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(88px, 30vw, 128px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.sign[data-tone='home'] {
+  --neon: #3fd8ff;
+  --core: #e2f9ff;
+}
+
+/* Light from the lit sign spills onto the wall behind it */
+.sign::before {
+  content: '';
+  position: absolute;
+  inset: -30% -20%;
+  z-index: -1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--neon) 22%, transparent), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.sign[data-lit]::before {
+  opacity: 1;
+}
+
+/* Unlit tubes: dark glass outlines */
+.glass {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 2px #34363c;
+}
+
+/* Lit tubes: a near-white core with the color glowing around it */
+.tube {
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  color: var(--core);
+  -webkit-text-stroke: 2px var(--neon);
+  text-shadow:
+    0 0 4px var(--neon),
+    0 0 12px var(--neon),
+    0 0 28px var(--neon),
+    0 0 56px color-mix(in srgb, var(--neon) 60%, transparent);
+  animation: flicker-on 0.9s linear both;
+}
+
+/* Sputters a few times before it catches, like an old sign */
+@keyframes flicker-on {
+  0%, 6% { opacity: 0; }
+  7%, 11% { opacity: 1; }
+  12%, 24% { opacity: 0.1; }
+  25%, 29% { opacity: 0.9; }
+  30%, 38% { opacity: 0.2; }
+  39%, 100% { opacity: 1; }
+}
+
+.loose {
+  animation: loose 5s linear 1.2s infinite;
+}
+
+@keyframes loose {
+  0%, 90%, 92%, 95%, 100% { opacity: 1; }
+  91%, 93%, 94% { opacity: 0.25; }
+}
+
+/* A chunky industrial toggle: a metal plate with a handle that slides between the signs */
+.toggle {
+  position: relative;
+  width: 76px;
+  height: 140px;
+  padding: 0;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(#3a3d44, #26282d);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 6px 14px rgb(0 0 0 / 0.5);
+  touch-action: none;
+}
+
+.slot {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  bottom: 14px;
+  width: 14px;
+  translate: -50% 0;
+  border-radius: 7px;
+  background: #0d0e10;
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.8);
+}
+
+.handle {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 8px;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(#5b5f68, #3b3e45 55%, #2f3238);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    0 4px 8px rgb(0 0 0 / 0.6);
+  cursor: grab;
+}
+
+/* Grip ridges across the handle */
+.handle::before {
+  content: '';
+  position: absolute;
+  inset: 20px 12px;
+  background: repeating-linear-gradient(#24262b 0 2px, transparent 2px 6px);
+  border-radius: 2px;
+}

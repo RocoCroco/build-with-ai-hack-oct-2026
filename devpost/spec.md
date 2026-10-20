@@ -109,7 +109,7 @@ An inline SVG front/back silhouette with 7 tappable regions (chest, back, should
 PRD ref: `prd.md > Muscle Group Body Map`.
 
 ### NeonSwitch / EquipmentScreen
-Two neon signs and a toggle with a CSS flicker keyframe on activation and a Web Audio click. Default: Gym.
+Two neon signs (GYM pink over HOME cyan; unlit tubes show as dark glass outlines) and a chunky slide toggle between them, with a CSS flicker keyframe when a sign lights and a Web Audio click plus a short tube hum. Tap the toggle or either sign, or drag the handle (a drag that's let go short of halfway snaps back). Default: Gym.
 PRD ref: `prd.md > Gym / Home Switch`.
 
 ### CaseRoll

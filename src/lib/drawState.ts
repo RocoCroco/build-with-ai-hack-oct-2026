@@ -22,6 +22,7 @@ export type Action =
   | { type: 'setMinutes'; minutes: number }
   | { type: 'toggleMuscle'; muscle: Muscle }
   | { type: 'setRandom'; on: boolean }
+  | { type: 'setPlace'; place: Place }
   | { type: 'revealExercise'; drawn: DrawnExercise }
   | { type: 'next' }
   | { type: 'back' }
@@ -69,6 +70,8 @@ export function drawReducer(state: DrawState, action: Action): DrawState {
     case 'setRandom':
       // Fully random clears any picked groups.
       return { ...state, fullyRandom: action.on, muscles: action.on ? [] : state.muscles };
+    case 'setPlace':
+      return { ...state, place: action.place };
     case 'revealExercise':
       return { ...state, drawn: [...state.drawn, action.drawn] };
     case 'next':
@@ -76,8 +79,10 @@ export function drawReducer(state: DrawState, action: Action): DrawState {
         case 'time':
           return state.minutes > 0 ? { ...state, step: 'muscles' } : state;
         case 'muscles':
-          // Until the gym/home screen exists, Continue here locks a gym draw.
-          return state.fullyRandom || state.muscles.length > 0 ? lockDraw(state) : state;
+          return state.fullyRandom || state.muscles.length > 0 ? { ...state, step: 'place' } : state;
+        case 'place':
+          // Gym or home is the last choice, so its Continue locks the draw.
+          return lockDraw(state);
         case 'count':
           return { ...state, step: 'cases' };
         case 'cases':
@@ -87,7 +92,7 @@ export function drawReducer(state: DrawState, action: Action): DrawState {
       }
     case 'back': {
       // Only setup screens go back, keeping their choices; once rolling starts the draw is locked.
-      const previous: Partial<Record<Step, Step>> = { time: 'start', muscles: 'time' };
+      const previous: Partial<Record<Step, Step>> = { time: 'start', muscles: 'time', place: 'muscles' };
       const to = previous[state.step];
       return to ? { ...state, step: to } : state;
     }

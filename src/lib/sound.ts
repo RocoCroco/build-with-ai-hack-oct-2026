@@ -103,3 +103,14 @@ export function playLever() {
   for (let i = 0; i < 5; i++) playLeverNotch(i / 4, i * 0.05);
   playLeverClunk(0.27);
 }
+
+/** The neon switch: a chunky two-part click (the toggle snapping over), then the tube's buzz as it lights. */
+export function playSwitch() {
+  if (!ctx || ctx.state !== 'running') return;
+  const now = ctx.currentTime;
+  tone(2400, now, 0.015, 0.12, 'square');
+  tone(140, now, 0.06, 0.18, 'triangle');
+  tone(1800, now + 0.035, 0.012, 0.08, 'square');
+  // The ballast hum of a neon tube warming up
+  tone(120, now + 0.05, 0.35, 0.03, 'sawtooth');
+}

@@ -39,7 +39,7 @@ Build mode: learn
   Learner check: Pick 2–3 muscles at about 45 min and play the whole draw. Then pick all 7 at 15 min and watch some reels land on 0. Try Back from the body map. Does the two-step reveal (count, then cases) feel fun or slow?
   Commit: `Add body map, count slot machine, and per-group cases`
 
-- [ ] **4. Gym or home with the neon switch**
+- [x] **4. Gym or home with the neon switch**
   Becomes usable: Muscles → Gym/Home neon screen → rolls. Flipping the switch lights one sign with a flicker and a click. Home draws only bodyweight exercises, and groups with few bodyweight options never get an empty case.
   Why now: It filters the pool the earlier slices already draw from, so it slots in once that pool is used end to end. Its failure mode (small home pools) needs `planCounts` to exist first.
   PRD ref: `prd.md > Gym / Home Switch`, `prd.md > Look and Feel`
@@ -94,3 +94,4 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Body map fills selected groups with their plate color instead of the single accent, with name chips under the map — keeps one color language across map, reels, cases, and plan, and makes the abstract shapes unambiguous. `spec.md > Look and Feel` updated. Until slice 4, the Muscles screen's Continue locks the draw (gym).
 - `planCounts` already caps each group at its pool size (needed for Home in slice 4); slot reels play a low clunk (`playReelStop`) as each reel locks.
 - Slice 3 learner feedback: Go arrow moved to the bottom right on every screen except the cases (top right there); bigger body map; slot reels size to fit the screen and wait for a `Lever` pull (curved arrow from the title, `playLever` sound); cases can be opened while others roll, each with its own row that shrinks as more roll at once — "should feel more fun and entertaining." `spec.md > Look and Feel`, `Components` (SlotReels / CountScreen, CasesScreen), and the core journey updated. Follow-up: the time wheel is bigger and centered in the free space, and the lever can be dragged down (ratchet click per notch; letting go past 60% still counts) as well as tapped.
+- Neon toggle can also be dragged and either sign tapped (matching the draggable lever the learner asked for in slice 3); a drag uses a plain click guarded by pointer movement, because motion's `onTap` still fired after a short drag.

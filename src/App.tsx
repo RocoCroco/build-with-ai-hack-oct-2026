@@ -5,6 +5,7 @@ import { drawReducer, initialState } from './lib/drawState';
 import { unlockAudio } from './lib/sound';
 import { CasesScreen } from './screens/CasesScreen';
 import { CountScreen } from './screens/CountScreen';
+import { EquipmentScreen } from './screens/EquipmentScreen';
 import { MuscleScreen } from './screens/MuscleScreen';
 import { PlanScreen } from './screens/PlanScreen';
 import { StartScreen } from './screens/StartScreen';
@@ -19,6 +20,8 @@ export default function App() {
         return <TimeScreen state={state} dispatch={dispatch} />;
       case 'muscles':
         return <MuscleScreen state={state} dispatch={dispatch} />;
+      case 'place':
+        return <EquipmentScreen state={state} dispatch={dispatch} />;
       case 'count':
         return <CountScreen state={state} dispatch={dispatch} />;
       case 'cases':
