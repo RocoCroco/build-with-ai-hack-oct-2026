@@ -5,12 +5,15 @@ import { drawReducer, initialState } from './lib/drawState';
 import { CasesScreen } from './screens/CasesScreen';
 import { PlanScreen } from './screens/PlanScreen';
 import { StartScreen } from './screens/StartScreen';
+import { TimeScreen } from './screens/TimeScreen';
 
 export default function App() {
   const [state, dispatch] = useReducer(drawReducer, initialState);
 
   function renderScreen() {
     switch (state.step) {
+      case 'time':
+        return <TimeScreen state={state} dispatch={dispatch} />;
       case 'cases':
         return <CasesScreen state={state} dispatch={dispatch} />;
       case 'plan':

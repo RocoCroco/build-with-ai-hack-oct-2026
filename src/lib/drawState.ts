@@ -1,5 +1,5 @@
 import type { Muscle, Place, Warmup } from '../data/exercises';
-import type { DrawnExercise } from './draw';
+import { exerciseCountFor, type DrawnExercise } from './draw';
 
 export type Step = 'start' | 'time' | 'muscles' | 'place' | 'warmup' | 'count' | 'cases' | 'plan';
 
@@ -19,8 +19,10 @@ export interface DrawState {
 
 export type Action =
   | { type: 'begin' }
+  | { type: 'setMinutes'; minutes: number }
   | { type: 'revealExercise'; drawn: DrawnExercise }
   | { type: 'next' }
+  | { type: 'back' }
   | { type: 'reset' };
 
 export const initialState: DrawState = {
@@ -38,12 +40,25 @@ export const initialState: DrawState = {
 export function drawReducer(state: DrawState, action: Action): DrawState {
   switch (action.type) {
     case 'begin':
-      // Fixed draw until the setup screens exist: fully random, 4 cases, gym.
-      return { ...initialState, step: 'cases', fullyRandom: true, total: 4 };
+      return { ...initialState, step: 'time' };
+    case 'setMinutes':
+      return { ...state, minutes: Math.min(Math.max(Math.round(action.minutes), 0), 120) };
     case 'revealExercise':
       return { ...state, drawn: [...state.drawn, action.drawn] };
     case 'next':
-      return state.step === 'cases' ? { ...state, step: 'plan' } : state;
+      switch (state.step) {
+        case 'time':
+          if (state.minutes <= 0) return state;
+          // Until the body map and gym/home screens exist: lock a fully random gym draw here.
+          return { ...state, step: 'cases', fullyRandom: true, total: exerciseCountFor(state.minutes) };
+        case 'cases':
+          return { ...state, step: 'plan' };
+        default:
+          return state;
+      }
+    case 'back':
+      // Only setup screens go back; once rolling starts the draw is locked.
+      return state.step === 'time' ? { ...state, step: 'start' } : state;
     case 'reset':
       return initialState;
   }

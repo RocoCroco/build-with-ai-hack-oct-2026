@@ -19,7 +19,7 @@ Build mode: learn
   Learner check: Run `npm run dev`, open `http://localhost:5173` in phone-sized DevTools, tap Start, tap each case and watch it roll, then check the plan. Does the roll feel like a case opening? What would you change about its speed, stop, or look?
   Commit: `Add case-opening roll and basic plan with fully random draw`
 
-- [ ] **2. The time wheel decides how many cases you get**
+- [x] **2. The time wheel decides how many cases you get**
   Becomes usable: Start → Time wheel → Cases. Dragging the dial ticks the minutes (15 / 45 / 60 / 120 at the quarter points), Continue only works above zero, and the number of cases follows the time.
   Why now: The wheel is the second hardest interaction (pointer angle → minutes) and it feeds the exercise count everything else depends on. Putting it right after the kernel connects setup to the reveal.
   PRD ref: `prd.md > Time Wheel`, `prd.md > States and Boundaries`
@@ -90,3 +90,4 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - `lib/sound.ts` moved from slice 4 into slice 1 with a roll tick and land chime, plus a pop-and-shake on the winner — learner feedback at the early checkpoint. Slice 4 adds only the switch click.
 - Roll curve changed to a steady ease-out quad over 5.2 s with a longer strip — the steep curve crawled inside the last card for ~1.5 s, so ticks went silent while it was visibly slowing (learner feedback).
 - Cases became `CaseTile` with a lid seam, ready glow, and a lid that opens before the roll; the inside shows the muscle color only after landing so it doesn't spoil the result (learner feedback). `spec.md > Components > CasesScreen` updated.
+- Time wheel plays a ratchet click (`playDial`) per minute, pitch rising with the time — added during slice 2 and approved by the learner over reusing the roll tick. Until slices 3–4 exist, Time's Continue locks a fully random gym draw directly.

@@ -1,0 +1,60 @@
+.dial {
+  display: block;
+  /* Big, but small enough on short phones that its right edge clears the Continue arrow */
+  width: min(300px, 76vw, 40dvh);
+  height: auto;
+  touch-action: none; /* dragging the dial must not scroll the page */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.dial:active {
+  cursor: grabbing;
+}
+
+/* No box around the dial; keyboard focus shows on the knob instead */
+.dial,
+.dial:focus,
+.dial:focus-visible {
+  outline: none;
+}
+
+.dial:focus-visible .knob {
+  stroke: var(--chalk);
+}
+
+.track {
+  fill: none;
+  stroke: var(--surface);
+}
+
+.fill {
+  fill: none;
+  stroke: var(--plate);
+}
+
+.quarter {
+  fill: var(--chalk-dim);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.start {
+  fill: var(--chalk);
+}
+
+.knob {
+  fill: var(--chalk);
+  stroke: var(--floor);
+  stroke-width: 4;
+}
+
+.knobArrow {
+  fill: none;
+  stroke: var(--floor);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

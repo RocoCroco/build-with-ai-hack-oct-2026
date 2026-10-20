@@ -16,6 +16,17 @@ export function pick<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+/** How many exercises the chosen time allows. Rough ranges, tuned while testing. */
+export function exerciseCountFor(minutes: number): number {
+  if (minutes <= 0) return 0;
+  if (minutes <= 20) return 3;
+  if (minutes <= 35) return 4;
+  if (minutes <= 50) return 5;
+  if (minutes <= 75) return 6;
+  if (minutes <= 100) return 7;
+  return 8;
+}
+
 /** Every exercise that fits the group and place (Home = bodyweight only). */
 export function poolFor(group: Group, place: Place): Exercise[] {
   return EXERCISES.filter(

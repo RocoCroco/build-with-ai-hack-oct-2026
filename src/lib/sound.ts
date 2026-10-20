@@ -37,6 +37,37 @@ export function playTick() {
   tone(1900 + Math.random() * 300, now, 0.03, 0.05, 'square');
 }
 
+let noise: AudioBuffer | null = null;
+let lastDial = 0;
+
+/**
+ * A ratchet click for the time wheel: a short burst of filtered noise, like a knob's detent.
+ * `amount` (0–1) raises the pitch as the time goes up, so winding it up sounds like it.
+ */
+export function playDial(amount: number) {
+  if (!ctx || ctx.state !== 'running') return;
+  const now = ctx.currentTime;
+  if (now - lastDial < 0.02) return;
+  lastDial = now;
+  if (!noise) {
+    noise = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.03), ctx.sampleRate);
+    const data = noise.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  }
+  const source = ctx.createBufferSource();
+  source.buffer = noise;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 1400 + amount * 2600;
+  filter.Q.value = 6;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.5, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+  source.connect(filter).connect(gain).connect(ctx.destination);
+  source.start(now);
+  source.stop(now + 0.03);
+}
+
 /** A bright two-note chime when the roll lands. */
 export function playLand() {
   if (!ctx || ctx.state !== 'running') return;

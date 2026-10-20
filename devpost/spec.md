@@ -101,7 +101,7 @@ App name "Workout Draw" with the tagline "Randomize your routine" and a big Star
 PRD ref: `prd.md > Screens and Layout`.
 
 ### TimeWheel / TimeScreen
-A dial using pointer drag. The pointer's angle around the center maps to minutes piecewise: 0–90° → 0–15, 90–180° → 15–45, 180–270° → 45–60, 270–360° → 60–120, rounded to whole minutes. The display shows the value (e.g. "1 h 03"). It's clamped at 0 and 120 (no wrapping past a full turn).
+A dial using pointer drag. The pointer's angle around the center maps to minutes piecewise: 0–90° → 0–15, 90–180° → 15–45, 180–270° → 45–60, 270–360° → 60–120, rounded to whole minutes. The display shows the value (e.g. "1 h 03"). It's clamped at 0 and 120 (no wrapping past a full turn). Each minute change plays a ratchet click whose pitch rises with the time; arrow keys adjust by 1 min (Shift: 5).
 PRD ref: `prd.md > Time Wheel`.
 
 ### BodyMap / MuscleScreen
@@ -184,7 +184,7 @@ build-with-ai-hack-oct-2026/
 │   │   ├── draw.test.ts      # Vitest: totals, dropping, no repeats, home=bodyweight
 │   │   ├── drawState.ts      # DrawState type, actions, and the reducer App uses
 │   │   ├── timeWheel.ts      # angle ↔ minutes mapping
-│   │   └── sound.ts          # Web Audio: roll tick, land chime, switch click
+│   │   └── sound.ts          # Web Audio: roll tick, land chime, dial ratchet, switch click
 │   └── screens/
 │       ├── StartScreen.tsx (+ .module.css)
 │       ├── TimeScreen.tsx  + TimeWheel.tsx
