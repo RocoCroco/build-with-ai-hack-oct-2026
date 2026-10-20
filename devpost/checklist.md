@@ -49,7 +49,7 @@ Build mode: learn
   Learner check: Flip between GYM and HOME and listen for the click. Run a Home draw with biceps and triceps and check every exercise is something you could do without equipment.
   Commit: `Add neon gym/home switch and bodyweight filtering`
 
-- [ ] **5. Warm-up roll, polished plan, New Draw, and Start over**
+- [x] **5. Warm-up roll, polished plan, New Draw, and Start over**
   Becomes usable: The full journey: a warm-up roll (can land on "No warm-up") before the count, plan cards that animate in one by one with the warm-up on top, New Draw back to Start, a corner menu with Start over during the rolls, and smooth transitions between screens.
   Why now: These finish the journey around a core that already works. They reuse `CaseRoll` and the reducer, so they're lower-risk and belong last.
   PRD ref: `prd.md > Warm-up Roll`, `prd.md > Workout Plan`, `prd.md > Start Over (during rolls)`, `prd.md > The Core Journey`
@@ -95,3 +95,7 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - `planCounts` already caps each group at its pool size (needed for Home in slice 4); slot reels play a low clunk (`playReelStop`) as each reel locks.
 - Slice 3 learner feedback: Go arrow moved to the bottom right on every screen except the cases (top right there); bigger body map; slot reels size to fit the screen and wait for a `Lever` pull (curved arrow from the title, `playLever` sound); cases can be opened while others roll, each with its own row that shrinks as more roll at once — "should feel more fun and entertaining." `spec.md > Look and Feel`, `Components` (SlotReels / CountScreen, CasesScreen), and the core journey updated. Follow-up: the time wheel is bigger and centered in the free space, and the lever can be dragged down (ratchet click per notch; letting go past 60% still counts) as well as tapped.
 - Neon toggle can also be dragged and either sign tapped (matching the draggable lever the learner asked for in slice 3); a drag uses a plain click guarded by pointer movement, because motion's `onTap` still fired after a short drag.
+- The warm-up roll uses one case on the same layout as the exercise cases (tap, lid opens, roll), so every roll in the app works the same way; it fills with the accent yellow since a warm-up has no muscle group. A "No warm-up" result adds no card to the plan. The corner menu sits top left, where Back is on setup screens, since Go is top right on roll screens.
+- "No warm-up" is a gold card in the warm-up roll (and the case fills gold when it lands there), same odds as each warm-up — learner request.
+- Added the "Reduce animations" toggle to the corner menu, moved in from the deferred list at the learner's request (`prd.md > Deferred From the POC` named a skip/fast-animations setting). When on, rolls slide onto the result in 0.6 s, reels stop in under 1 s, and flicker/pulse/slide effects stop; sounds stay. Saved in this browser only. The menu now also shows on Start and Plan (setting only; Start over stays on the roll screens).
+- Layout made consistent (learner request): the menu sits top right on every screen and Go is always bottom right, including the warm-up and cases screens, which now leave bottom room for it under the cases.

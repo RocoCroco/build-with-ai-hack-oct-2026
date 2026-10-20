@@ -117,7 +117,7 @@ Start screen, three setup screens (time wheel, body map, gym/home neon switch) w
 
 ## Deferred From the POC
 - **Equipment at home (dumbbells, bench, weights):** needs another choice and more exercise data.
-- **Skip / fast animations setting:** nice for repeat users, not needed to prove the reveal.
+- **Skip / fast animations setting:** brought into the POC during the build as a "Reduce animations" switch in the corner menu (learner request).
 - **Checking off exercises during the workout:** from scope Later.
 - **How-to per exercise (video link, then custom animations):** from scope Later.
 

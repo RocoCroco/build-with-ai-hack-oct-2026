@@ -1,4 +1,4 @@
-import { EXERCISES, type Exercise, type Muscle, type Place } from '../data/exercises';
+import { EXERCISES, WARMUPS, type Exercise, type Muscle, type Place, type Warmup } from '../data/exercises';
 
 export interface DrawnExercise {
   exercise: Exercise;
@@ -7,6 +7,11 @@ export interface DrawnExercise {
 }
 
 export type Group = Muscle | 'any';
+
+/** The warm-up roll: any warm-up, or "No warm-up", each equally likely. */
+export function drawWarmup(): Warmup | 'none' {
+  return pick<Warmup | 'none'>([...WARMUPS, 'none']);
+}
 
 export function randomInt(min: number, max: number): number {
   return min + Math.floor(Math.random() * (max - min + 1));

@@ -42,6 +42,20 @@
   box-shadow: 0 0 0 2px var(--plate);
 }
 
+/* The gold card: "No warm-up" in the warm-up roll */
+.item[data-gold] {
+  background: linear-gradient(135deg, #6b4e12, #c99a2e 42%, #f6d878 52%, #b8862a 62%, #5e4410);
+  color: #241a05;
+}
+
+.item[data-gold]::after {
+  background: #ffe9a3;
+}
+
+.item[data-gold][data-winner] {
+  box-shadow: 0 0 0 2px #ffe9a3, 0 0 22px 4px rgb(246 216 120 / 0.55);
+}
+
 .label {
   font-family: var(--font-display);
   font-weight: 600;

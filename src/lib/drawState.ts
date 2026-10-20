@@ -23,6 +23,7 @@ export type Action =
   | { type: 'toggleMuscle'; muscle: Muscle }
   | { type: 'setRandom'; on: boolean }
   | { type: 'setPlace'; place: Place }
+  | { type: 'revealWarmup'; warmup: Warmup | 'none' }
   | { type: 'revealExercise'; drawn: DrawnExercise }
   | { type: 'next' }
   | { type: 'back' }
@@ -42,17 +43,17 @@ export const initialState: DrawState = {
 
 /**
  * Locks the draw: decides the total and each group's count once, before any roll plays.
- * Fully random skips the count roll and goes straight to the cases.
+ * The warm-up roll comes next; fully random later skips the count roll.
  */
 function lockDraw(state: DrawState): DrawState {
   const total = exerciseCountFor(state.minutes);
   if (state.fullyRandom) {
     const available = poolFor('any', state.place).length;
-    return { ...state, step: 'cases', total: Math.min(total, available), counts: {}, drawn: [] };
+    return { ...state, step: 'warmup', total: Math.min(total, available), counts: {}, warmup: null, drawn: [] };
   }
   const counts = planCounts(state.muscles, total, state.place);
   const locked = Object.values(counts).reduce((a, b) => a + b, 0);
-  return { ...state, step: 'count', total: locked, counts, drawn: [] };
+  return { ...state, step: 'warmup', total: locked, counts, warmup: null, drawn: [] };
 }
 
 export function drawReducer(state: DrawState, action: Action): DrawState {
@@ -72,6 +73,8 @@ export function drawReducer(state: DrawState, action: Action): DrawState {
       return { ...state, fullyRandom: action.on, muscles: action.on ? [] : state.muscles };
     case 'setPlace':
       return { ...state, place: action.place };
+    case 'revealWarmup':
+      return { ...state, warmup: action.warmup };
     case 'revealExercise':
       return { ...state, drawn: [...state.drawn, action.drawn] };
     case 'next':
@@ -83,6 +86,9 @@ export function drawReducer(state: DrawState, action: Action): DrawState {
         case 'place':
           // Gym or home is the last choice, so its Continue locks the draw.
           return lockDraw(state);
+        case 'warmup':
+          // Fully random has no counts to roll.
+          return state.warmup ? { ...state, step: state.fullyRandom ? 'cases' : 'count' } : state;
         case 'count':
           return { ...state, step: 'cases' };
         case 'cases':

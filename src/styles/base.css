@@ -78,7 +78,7 @@ button {
   outline-offset: 3px;
 }
 
-/* Arrow-shaped Continue button, bottom right of the phone frame (screens leave room for it) */
+/* Arrow-shaped Continue button, bottom right on every screen (screens leave room for it) */
 .continue {
   position: absolute;
   right: 0;
@@ -94,12 +94,6 @@ button {
   font-size: 15px;
   clip-path: polygon(0 0, 62% 0, 100% 50%, 62% 100%, 0 100%);
   text-align: left;
-}
-
-/* On the cases screen the cases own the bottom, so the arrow moves to the top right */
-.continue[data-at='top'] {
-  top: var(--space-3);
-  bottom: auto;
 }
 
 .continue:disabled {

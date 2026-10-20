@@ -1,18 +1,24 @@
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
 import styles from './App.module.css';
-import { drawReducer, initialState } from './lib/drawState';
+import { drawReducer, initialState, type Step } from './lib/drawState';
+import { loadReduceAnimations, ReduceAnimationsContext, saveReduceAnimations } from './lib/motionPrefs';
 import { unlockAudio } from './lib/sound';
 import { CasesScreen } from './screens/CasesScreen';
 import { CountScreen } from './screens/CountScreen';
 import { EquipmentScreen } from './screens/EquipmentScreen';
+import { MenuButton } from './screens/MenuButton';
 import { MuscleScreen } from './screens/MuscleScreen';
 import { PlanScreen } from './screens/PlanScreen';
 import { StartScreen } from './screens/StartScreen';
 import { TimeScreen } from './screens/TimeScreen';
+import { WarmupScreen } from './screens/WarmupScreen';
+
+const ROLL_STEPS: Step[] = ['warmup', 'count', 'cases'];
 
 export default function App() {
   const [state, dispatch] = useReducer(drawReducer, initialState);
+  const [reduceAnimations, setReduceAnimations] = useState(loadReduceAnimations);
 
   function renderScreen() {
     switch (state.step) {
@@ -22,6 +28,8 @@ export default function App() {
         return <MuscleScreen state={state} dispatch={dispatch} />;
       case 'place':
         return <EquipmentScreen state={state} dispatch={dispatch} />;
+      case 'warmup':
+        return <WarmupScreen state={state} dispatch={dispatch} />;
       case 'count':
         return <CountScreen state={state} dispatch={dispatch} />;
       case 'cases':
@@ -34,11 +42,12 @@ export default function App() {
   }
 
   return (
-    // Animations always play, even with the OS "reduce motion" setting on (learner decision).
-    // A manual toggle can come later with the settings menu.
-    <MotionConfig reducedMotion="never">
+    // Animations ignore the OS "reduce motion" setting (learner decision); the menu's own
+    // "Reduce animations" switch turns them down instead.
+    <ReduceAnimationsContext value={reduceAnimations}>
+    <MotionConfig reducedMotion={reduceAnimations ? 'always' : 'never'}>
       {/* Any tap unlocks audio, so sounds that play later (reels, rolls) are allowed. */}
-      <div className={styles.shell} onPointerDown={unlockAudio}>
+      <div className={styles.shell} onPointerDown={unlockAudio} data-reduce-motion={reduceAnimations || undefined}>
         {/* AnimatePresence stays mounted; each screen is keyed by its step. */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.main
@@ -52,7 +61,17 @@ export default function App() {
             {renderScreen()}
           </motion.main>
         </AnimatePresence>
+        {/* On every screen; once the draw is locked, its Start over is the only way out. */}
+        <MenuButton
+          reduceAnimations={reduceAnimations}
+          onReduceAnimations={(on) => {
+            setReduceAnimations(on);
+            saveReduceAnimations(on);
+          }}
+          onStartOver={ROLL_STEPS.includes(state.step) ? () => dispatch({ type: 'reset' }) : undefined}
+        />
       </div>
     </MotionConfig>
+    </ReduceAnimationsContext>
   );
 }

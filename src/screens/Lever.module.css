@@ -47,6 +47,11 @@
   animation: ready 1.6s ease-in-out infinite;
 }
 
+:global([data-reduce-motion]) .knob[data-ready] {
+  animation: none;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.5), 0 0 14px 3px rgb(226 70 63 / 0.45);
+}
+
 @keyframes ready {
   0%,
   100% {

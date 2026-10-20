@@ -8,6 +8,8 @@ interface Props {
   state: CaseState;
   /** Set once revealed: fills the inside with the group's plate color. */
   muscle?: Muscle;
+  /** Revealed as the gold result (No warm-up). */
+  gold?: boolean;
   label: string;
   onTap: () => void;
   /** Called when the lid finishes opening; the roll starts then. */
@@ -35,13 +37,14 @@ const lidTop: Variants = {
   gone: { rotateX: 0, opacity: 0, scale: 0.6, transition: { duration: 0.3, ease: 'easeOut' } },
 };
 
-export function CaseTile({ state, muscle, label, onTap, onOpened }: Props) {
+export function CaseTile({ state, muscle, gold, label, onTap, onOpened }: Props) {
   const lid = state === 'open' ? 'open' : state === 'revealed' ? 'gone' : 'closed';
   return (
     <motion.button
       className={styles.case}
       data-state={state}
       data-muscle={muscle}
+      data-gold={gold || undefined}
       disabled={state !== 'ready'}
       onClick={onTap}
       aria-label={label}

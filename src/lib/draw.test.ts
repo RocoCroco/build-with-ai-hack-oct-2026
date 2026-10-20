@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { EXERCISES, MUSCLES, type Muscle } from '../data/exercises';
-import { drawExercise, planCounts, poolFor, shuffle, type DrawnExercise } from './draw';
+import { EXERCISES, MUSCLES, WARMUPS, type Muscle } from '../data/exercises';
+import { drawExercise, drawWarmup, planCounts, poolFor, shuffle, type DrawnExercise } from './draw';
 
 function drawMany(count: number, group: Parameters<typeof drawExercise>[0], place: 'gym' | 'home') {
   const drawn: DrawnExercise[] = [];
@@ -130,5 +130,13 @@ describe('home (bodyweight only)', () => {
         }
       }
     }
+  });
+});
+
+describe('drawWarmup', () => {
+  it('can land on a warm-up or on "No warm-up"', () => {
+    const results = Array.from({ length: 300 }, drawWarmup);
+    expect(results).toContain('none');
+    expect(results.some((r) => r !== 'none' && WARMUPS.includes(r))).toBe(true);
   });
 });

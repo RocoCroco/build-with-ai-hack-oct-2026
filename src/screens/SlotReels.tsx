@@ -2,6 +2,7 @@ import { animate, motion, useMotionValue, useMotionValueEvent } from 'motion/rea
 import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { MUSCLE_LABELS, type Muscle } from '../data/exercises';
 import { randomInt } from '../lib/draw';
+import { useReduceAnimations } from '../lib/motionPrefs';
 import { playReelStop, playTick } from '../lib/sound';
 import styles from './SlotReels.module.css';
 
@@ -109,6 +110,7 @@ interface Props {
 
 /** One reel per chosen group; each spins and stops on its decided count, left to right. */
 export function SlotReels({ counts, order, spinning, onDone }: Props) {
+  const reduce = useReduceAnimations();
   const stoppedCount = useRef(0);
   const machineRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -135,7 +137,7 @@ export function SlotReels({ counts, order, spinning, onDone }: Props) {
             cell={cell}
             spinning={spinning}
             delay={0.05}
-            duration={1.6 + i * 0.4}
+            duration={reduce ? 0.45 + i * 0.1 : 1.6 + i * 0.4}
             onStop={() => {
               stoppedCount.current++;
               if (stoppedCount.current === order.length) onDone();

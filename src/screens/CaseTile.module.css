@@ -55,11 +55,25 @@
 }
 
 /* Revealed: the opening fills with the group's color and light spills up out of the box */
+/* (The warm-up case has no muscle group, so it fills with the accent) */
 .case[data-state='revealed'] .inside {
-  background: var(--m);
+  background: var(--m, var(--plate));
   box-shadow:
     inset 0 5px 8px rgb(0 0 0 / 0.35),
-    0 -8px 18px -2px var(--m);
+    0 -8px 18px -2px var(--m, var(--plate));
+}
+
+.case[data-gold][data-state='revealed'] .inside {
+  background: linear-gradient(120deg, #c99a2e, #f6d878 50%, #b8862a);
+  box-shadow:
+    inset 0 5px 8px rgb(0 0 0 / 0.3),
+    0 -8px 20px 0 rgb(246 216 120 / 0.8);
+}
+
+/* Reduce animations: a steady glow instead of the pulse */
+:global([data-reduce-motion]) .case[data-state='ready'] {
+  animation: none;
+  box-shadow: 0 0 14px 2px rgb(244 196 48 / 0.35);
 }
 
 .body {

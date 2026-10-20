@@ -2,6 +2,7 @@ import { animate, motion, useMotionValue, useMotionValueEvent } from 'motion/rea
 import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react';
 import type { Muscle } from '../data/exercises';
 import { pick } from '../lib/draw';
+import { useReduceAnimations } from '../lib/motionPrefs';
 import { playLand, playTick } from '../lib/sound';
 import styles from './CaseRoll.module.css';
 
@@ -9,6 +10,8 @@ export interface RollItem {
   id: string;
   label: string;
   muscle?: Muscle;
+  /** A special item, shown as a gold card (like a rare drop). */
+  gold?: boolean;
 }
 
 const ITEM_WIDTH = 132;
@@ -46,6 +49,7 @@ export function CaseRoll({ pool, result, onDone }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const lastIndex = useRef(START_INDEX);
+  const reduce = useReduceAnimations();
   const finish = useEffectEvent(() => {
     setLanded(true);
     playLand();
@@ -76,14 +80,17 @@ export function CaseRoll({ pool, result, onDone }: Props) {
     const stop = offsetFor(WIN_INDEX, width) + jitter;
     const overshoot = 16;
 
-    // Always spins, even with reduced motion on: the roll is the product (learner decision).
-    const controls = animate(x, [start, stop - overshoot, stop], {
-      duration: 5.2,
-      times: [0, 0.92, 1],
-      // Steady deceleration (ease-out quad) so cards keep crossing the marker, and ticking,
-      // almost until the stop; then a short settle back from the overshoot.
-      ease: [[0.25, 0.46, 0.45, 0.94], [0.45, 0, 0.25, 1]],
-    });
+    // Spins even with the OS reduced-motion setting (learner decision); the app's own
+    // "Reduce animations" switch makes it a quick slide onto the result instead.
+    const controls = reduce
+      ? animate(x, [start, stop], { duration: 0.6, ease: [0.23, 1, 0.32, 1] })
+      : animate(x, [start, stop - overshoot, stop], {
+          duration: 5.2,
+          times: [0, 0.92, 1],
+          // Steady deceleration (ease-out quad) so cards keep crossing the marker, and ticking,
+          // almost until the stop; then a short settle back from the overshoot.
+          ease: [[0.25, 0.46, 0.45, 0.94], [0.45, 0, 0.25, 1]],
+        });
 
     let cancelled = false;
     controls.then(() => {
@@ -93,7 +100,7 @@ export function CaseRoll({ pool, result, onDone }: Props) {
       cancelled = true;
       controls.stop();
     };
-  }, [x, spins]);
+  }, [x, spins, reduce]);
 
   return (
     <div ref={viewportRef} className={styles.viewport} aria-live="polite">
@@ -106,6 +113,7 @@ export function CaseRoll({ pool, result, onDone }: Props) {
               className={styles.item}
               data-muscle={item.muscle}
               data-winner={isWinner || undefined}
+              data-gold={item.gold || undefined}
               // The winner pops up and gives a quick shake when the roll lands.
               animate={isWinner ? { scale: [1, 1.2, 1.1], y: -4, rotate: [0, -4, 4, -3, 2, 0] } : undefined}
               transition={{

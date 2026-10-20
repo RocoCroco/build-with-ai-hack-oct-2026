@@ -21,7 +21,7 @@
 .svg {
   display: block;
   /* As big as fits: half the width each, and whatever height the title, chips, and Go arrow leave */
-  width: clamp(110px, min(42vw, calc((100dvh - 440px) * 0.46)), 175px);
+  width: clamp(84px, min(42vw, calc((100dvh - 440px) * 0.46)), 175px);
   height: auto;
   overflow: visible;
 }

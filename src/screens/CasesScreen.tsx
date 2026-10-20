@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type Dispatch } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type Dispatch } from 'react';
 import { MUSCLE_LABELS, MUSCLES } from '../data/exercises';
 import { drawExercise, poolFor, type DrawnExercise, type Group } from '../lib/draw';
 import type { Action, DrawState } from '../lib/drawState';
@@ -31,8 +31,8 @@ const ROW_GAP = 6;
 /** One roll row per open case: full size while few, shrinking so every row fits the space. */
 function rowSize(rows: number, area: number) {
   const slot = Math.floor((area - (rows - 1) * ROW_GAP) / rows);
-  const pad = slot >= 130 ? 16 : 6;
-  const itemHeight = Math.max(34, Math.min(112, slot - 2 * pad));
+  const pad = slot >= 130 ? 16 : slot >= 48 ? 6 : 3;
+  const itemHeight = Math.max(28, Math.min(112, slot - 2 * pad));
   return { itemHeight, pad, compact: itemHeight < 72 };
 }
 
@@ -72,6 +72,12 @@ function GroupRound({
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // On very short screens the rows can overflow; keep the newest one in view.
+  useEffect(() => {
+    const el = rollsRef.current!;
+    el.scrollTo({ top: el.scrollHeight });
+  }, [rolling.length]);
 
   const roundDrawn = state.drawn.slice(startIndex);
   const finished = landed.length >= count;
@@ -154,7 +160,6 @@ function GroupRound({
       {finished && (
         <button
           className="continue"
-          data-at="top"
           onClick={onContinue}
           aria-label={next ? `Continue to ${groupLabel(next.group)}` : 'Continue to your plan'}
         >

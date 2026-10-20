@@ -64,7 +64,7 @@ To verify at the start of the build: install the current versions with `npm crea
 From `prd.md > Look and Feel`. The build should follow it without asking again.
 
 - **Overall:** simple, clean, smooth. Lots of space, one focal element per screen, minimal copy. Every interaction should feel physical (springs, not linear tweens).
-- **Shared baseline: dark.** A dark base (near-black / deep charcoal background, off-white text, one bright accent color for primary actions and selections). Workout apps read as dark, and the neon screen fits naturally. Dark is the baseline, not "everything black": cards and surfaces can use lighter charcoal layers. A clean sans-serif (e.g. Inter / system UI) and the same arrow-shaped Continue button at the bottom right (top right on the cases screen, where the cases own the bottom). This keeps the app coherent while each screen gets its own treatment.
+- **Shared baseline: dark.** A dark base (near-black / deep charcoal background, off-white text, one bright accent color for primary actions and selections). Workout apps read as dark, and the neon screen fits naturally. Dark is the baseline, not "everything black": cards and surfaces can use lighter charcoal layers. A clean sans-serif (e.g. Inter / system UI) and the same arrow-shaped Continue button at the bottom right of every screen, and the corner menu at the top right. This keeps the app coherent while each screen gets its own treatment.
 - **Per-screen treatments (intentionally different):**
   - **Time wheel:** big circular dial, arrow at the top, a large tabular-number readout that ticks as you rotate.
   - **Body map:** front/back silhouette; selected groups fill with their own plate color (the same per-group colors used on reels, cases, and the plan) with a small spring "pop." Name chips under the map mirror it.
@@ -124,12 +124,16 @@ PRD ref: `prd.md > Count Slot Machine`.
 Shows the current group's closed cases (`CaseTile`: lid seam with latch; ready cases pulse with a soft glow). Tapping one draws the result and opens the lid like a chest hinged at the back (front face tips away, lid rises upright behind the case, ~0.45 s), then gives it its own `CaseRoll` row. Cases can be opened while others are still rolling; rows grow to fill the space and shrink (down to one-line rows) as more roll at once; on landing the lid fades away and the open case's inside fills with the muscle group's plate color. Once every case in the group has landed, Go advances to the next group, or to the Plan. In fully random mode it shows N cases drawing from `'any'`.
 PRD ref: `prd.md > Exercise Case Openings`.
 
+### WarmupScreen
+One case on the same layout as the exercise cases. Tapping it calls `drawWarmup()` (any warm-up or "No warm-up", equally likely), opens the lid, and a `CaseRoll` over the warm-ups lands on the result. Go then moves to the count reels, or straight to the cases when fully random.
+PRD ref: `prd.md > Warm-up Roll`.
+
 ### PlanScreen
 Cards for the warm-up (if any) and each exercise (name, muscle group, sets × reps), revealed one after another. New Draw dispatches `reset`.
 PRD ref: `prd.md > Workout Plan`.
 
 ### MenuButton
-A small corner button on the roll screens with a "Start over" option that dispatches `reset`.
+A small corner button, top right on every screen. It holds a "Reduce animations" switch (saved in this browser; rolls land in 0.6 s, reels stop fast, flicker and pulse effects stop, sounds stay) and, on the roll screens only, "Start over", which dispatches `reset`.
 PRD ref: `prd.md > Start Over (during rolls)`.
 
 ## Data Model
