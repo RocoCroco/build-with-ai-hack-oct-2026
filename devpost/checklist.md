@@ -125,15 +125,15 @@ Build mode: learn
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: [what actually happened; real document/test/code references; unfinished work if interrupted]
-Route and stops: [actual paths and symbols; guided stops completed, or reference-only route]
-Edit outcome: [tried/kept/reverted/declined/not applicable; verification if changed]
-Reflection: [offered/answered/declined/already covered — personal answer belongs only in the ignored profile]
-Activity mode: [live app and editor, explicit static fallback, focused alternative, prior practice, or recap]
+Activity and evidence: Focused alternative tied to the stated goal (choosing and creating good skills). Took the real stickman failure (stills looked right; the loop had stopped after ~5 frames, fixed in `src/lib/useFrameLoop.ts`) and wrote the procedure that caught it as a project skill, `.claude/skills/animation-check/` (`SKILL.md` + `scripts/probe.mjs`). The learner decided the trigger (only when the user reports an animation isn't working, trading a round trip for fewer checks), the "verified" bar (positions sampled over real time, real taps, screenshots as support only), and the name. Tested once on the stickman: arm x2 moved 114.1 → 116.5 → 114.7 → 112.0 while idle, a real tap at 3.2 s set off a move (x2 137.1 at 3.8 s). The test exposed a gap (probing before the dev server answered); a wait-for-200 step was added.
+Route and stops: Reference route only (not toured interactively), in the app map: `src/screens/MuscleMan.tsx` `tap()` → `src/lib/muscleMan.ts` `TAP_MOVES` / `pickTapMove` / `playBeats` → `src/lib/useFrameLoop.ts` `useFrameLoop`.
+Edit outcome: Kept: the new `animation-check` skill (no app code changed), committed f664240.
+Reflection: Offered (optional transfer question at hand-off).
+Activity mode: Focused alternative, with the skill tested against the live dev server over CDP.
 
 ## Revisions
 

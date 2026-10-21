@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workout Draw App Map</title>
+<style>
+  :root {
+    --bg: #17181b; --surface: #222429; --line: #3a3d44; --text: #edebe6; --dim: #a3a29e;
+    --accent: #f4c430; --ink: #1d1a10; --red: #e2463f; --blue: #3a6fd8; --green: #3fa568; --violet: #9b6ce0;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f4ef; --surface: #ffffff; --line: #d9d6cf; --text: #1d1c1a; --dim: #5d5b56; --accent: #b98a00; --ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { margin: 0 0 4px; font-size: 34px; line-height: 1.1; }
+  h2 { margin: 36px 0 10px; font-size: 21px; border-left: 4px solid var(--accent); padding-left: 10px; }
+  p { margin: 0 0 12px; }
+  .lede { color: var(--dim); }
+  code { font: 14px/1.4 ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; overflow-wrap: anywhere; }
+  .pieces { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .pieces li, .stop, .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .pieces strong { display: block; }
+  .pieces span { color: var(--dim); font-size: 14px; }
+  figure { margin: 0; }
+  svg { display: block; width: 100%; height: auto; }
+  figcaption { color: var(--dim); font-size: 14px; margin-top: 6px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink); background: var(--accent); border-radius: 999px; padding: 1px 9px; vertical-align: middle; }
+  ol.route { margin: 0; padding: 0; list-style: none; counter-reset: stop; display: grid; gap: 10px; }
+  ol.route > li { counter-increment: stop; }
+  .stop h3 { margin: 0 0 6px; font-size: 17px; }
+  .stop h3::before { content: counter(stop) ". "; color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-top: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 600; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--accent); }
+  pre { margin: 8px 0 0; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; font: 13px/1.45 ui-monospace, Consolas, monospace; }
+  .meta { color: var(--dim); font-size: 14px; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  @media (max-width: 520px) { th:nth-child(3), td:nth-child(3) { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Workout Draw: app map</h1>
+  <p class="lede">A pocket guide to how the app is put together, where things live, and where to start when you want to change something. A snapshot of the code at the commit listed at the bottom; it can drift as the app changes.</p>
+
+  <h2>What it is</h2>
+  <p>A phone-sized web app that runs entirely in the browser. You set up a workout (time wheel, body map, gym or home), every exercise is revealed by a case-opening roll, and you get a plan you can share, follow set by set, and save. Finished workouts grow a stickman on the Start screen and fill out a 7-sided balance chart. Nothing is sent to a server: history lives in this browser.</p>
+  <ul class="pieces">
+    <li><strong>Screens</strong><span><code>src/screens/</code>, one component per step, chosen in <code>src/App.tsx</code></span></li>
+    <li><strong>The draw state</strong><span><code>src/lib/drawState.ts</code>: one reducer for the whole journey, from Start to Done</span></li>
+    <li><strong>Exercise data</strong><span><code>src/data/</code>: exercises, form cues, and every animated figure's poses</span></li>
+    <li><strong>Saving</strong><span><code>src/lib/storage.ts</code>: the one place that talks to <code>localStorage</code></span></li>
+    <li><strong>Animation engines</strong><span><code>src/lib/figure.ts</code> (exercise figures), <code>src/lib/muscleMan.ts</code> (the stickman), <code>src/lib/useFrameLoop.ts</code></span></li>
+  </ul>
+
+  <h2>One action, end to end: tap the stickman</h2>
+  <figure>
+    <svg viewBox="0 0 720 250" role="img" aria-labelledby="flow-title">
+      <title id="flow-title">Tapping the stickman: MuscleMan's tap picks a move from TAP_MOVES, the frame loop plays it, and ManFigure redraws him each frame.</title>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g fill="none" stroke="currentColor" stroke-width="2" style="color: var(--dim)" marker-end="url(#arrow)">
+        <path d="M150 62 H206"/>
+        <path d="M400 62 H456"/>
+        <path d="M580 96 V138"/>
+        <path d="M456 178 H400"/>
+        <path d="M206 178 H150"/>
+      </g>
+      <g font-family="system-ui, sans-serif" font-size="14">
+        <rect x="10" y="28" width="140" height="68" rx="10" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <text x="80" y="56" text-anchor="middle" fill="var(--text)" font-weight="700">You tap him</text>
+        <text x="80" y="76" text-anchor="middle" fill="var(--dim)">on Start</text>
+
+        <rect x="210" y="28" width="190" height="68" rx="10" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="305" y="54" text-anchor="middle" fill="var(--text)" font-weight="700">tap()</text>
+        <text x="305" y="74" text-anchor="middle" fill="var(--dim)">screens/MuscleMan.tsx</text>
+
+        <rect x="460" y="28" width="250" height="68" rx="10" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="585" y="54" text-anchor="middle" fill="var(--text)" font-weight="700">pickTapMove · TAP_MOVES</text>
+        <text x="585" y="74" text-anchor="middle" fill="var(--dim)">lib/muscleMan.ts</text>
+
+        <rect x="460" y="144" width="250" height="68" rx="10" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="585" y="170" text-anchor="middle" fill="var(--text)" font-weight="700">useFrameLoop → playBeats</text>
+        <text x="585" y="190" text-anchor="middle" fill="var(--dim)">every frame: where is he now?</text>
+
+        <rect x="210" y="144" width="190" height="68" rx="10" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="305" y="170" text-anchor="middle" fill="var(--text)" font-weight="700">ManFigure</text>
+        <text x="305" y="190" text-anchor="middle" fill="var(--dim)">draws bones + muscles</text>
+
+        <rect x="10" y="144" width="140" height="68" rx="10" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+        <text x="80" y="172" text-anchor="middle" fill="var(--text)" font-weight="700">He dances</text>
+        <text x="80" y="192" text-anchor="middle" fill="var(--dim)">or strikes a pose</text>
+      </g>
+    </svg>
+    <figcaption>No server and no storage involved: it all happens in the page, about 60 times a second.</figcaption>
+  </figure>
+
+  <h2>The route through the code <span class="tag">Reference route</span></h2>
+  <p class="meta">Not toured step by step together; open these to follow the tap yourself. Search for the names in quotes.</p>
+  <ol class="route">
+    <li class="stop">
+      <h3>The tap lands: <code>src/screens/MuscleMan.tsx</code></h3>
+      <p>Search <code>function tap()</code>. It ignores the tap if he's already busy (a celebration or another move), picks a random move, and switches his "mode" to it. The SVG's <code>onClick</code> in <code>ManFigure</code> calls it.</p>
+    </li>
+    <li class="stop">
+      <h3>What he can do: <code>src/lib/muscleMan.ts</code></h3>
+      <p>Search <code>TAP_MOVES</code>: the 3 dances (stanky leg, disco, griddy) and 5 poses, each a list of beats (a pose, how long to move into it, how long to hold). <code>pickTapMove</code> never repeats the last move; <code>playBeats</code> says which pose he's in at any moment.</p>
+    </li>
+    <li class="stop">
+      <h3>The heartbeat: <code>src/lib/useFrameLoop.ts</code></h3>
+      <p>Search <code>useFrameLoop</code>. One <code>requestAnimationFrame</code> loop that subscribes once and always calls the latest code. This replaced Motion's <code>useAnimationFrame</code>, which re-subscribed on every redraw and stopped the stickman after a few frames.</p>
+      <details>
+        <summary>Show the core of it</summary>
+<pre>const loop = (t: number) =&gt; {
+  start ??= t;
+  latest.current((t - start) / 1000);
+  id = requestAnimationFrame(loop);
+};
+id = requestAnimationFrame(loop);
+return () =&gt; cancelAnimationFrame(id);</pre>
+      </details>
+    </li>
+  </ol>
+
+  <h2>To change this, start here</h2>
+  <table>
+    <thead><tr><th>You want to…</th><th>Start in</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>Add a stickman dance or pose</td><td><code>src/lib/muscleMan.ts</code> → <code>TAP_MOVES</code></td><td>Tests keep every pose inside his frame.</td></tr>
+      <tr><td>Add an exercise</td><td><code>src/data/exercises.ts</code> (<code>rows</code>), then <code>CUES</code> in <code>howTo.ts</code> and <code>FIGURES</code> in <code>figures.ts</code></td><td>Tests fail until all three have it.</td></tr>
+      <tr><td>Change colors or fonts</td><td><code>src/styles/base.css</code> → <code>:root</code></td><td>Each muscle group's plate color is set there too.</td></tr>
+      <tr><td>Change the workout flow</td><td><code>src/lib/drawState.ts</code> → <code>drawReducer</code></td><td>Every step and button goes through this one reducer.</td></tr>
+      <tr><td>Save history online (e.g. Supabase)</td><td><code>src/lib/storage.ts</code> → the <code>Store</code> interface</td><td>Write another <code>store</code> with the same shape; screens don't change.</td></tr>
+      <tr><td>Change the shared photo</td><td><code>src/lib/share.ts</code> → <code>planImage</code></td><td>Drawn on a canvas, no extra library.</td></tr>
+      <tr><td>Make muscles grow faster or slower</td><td><code>src/lib/stats.ts</code> → <code>growth</code></td><td>Used by both the stickman and the balance chart.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>A practice to reuse</h2>
+  <div class="card">
+    <p><strong>When a check lets you down, turn the corrected check into a skill.</strong></p>
+    <p>The stickman looked right in still screenshots, but in the real app he was frozen. Stills (and headless browsers in "virtual time") only render a few frames, so they couldn't show that the frame loop had stopped. What settled it was sampling his arm position every second in a really running browser, with a real tap. That procedure is now a project skill, <code>.claude/skills/animation-check/SKILL.md</code> (with <code>scripts/probe.mjs</code>), that triggers when someone reports an animation isn't working and only accepts "fixed" once sampled numbers show the motion.</p>
+    <p>On another project: when the agent claims something works and it doesn't, note what evidence would have caught it, then write that down as a skill with a narrow trigger (the description) and a clear bar for "done". The next time, the agent brings the right check on its own.</p>
+  </div>
+
+  <h2>Run it again</h2>
+  <pre>npm install
+npm run dev    # open the URL it prints (phone-sized window works best)
+npm test       # the draw, figures, workout and stickman tests</pre>
+  <p class="meta">Snapshot of the code at commit <code>f664240</code> (October 2026). Paths and names may drift as the app changes.</p>
+</main>
+</body>
+</html>
