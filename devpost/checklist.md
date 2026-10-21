@@ -59,6 +59,27 @@ Build mode: learn
   Learner check: Play the whole journey Start → Plan, then Start over mid-roll once and confirm nothing carries over, and New Draw from the plan.
   Commit: `Add warm-up roll, plan cards, new draw, and start over`
 
+- [x] **6. Share the plan as text or as a photo**
+  Becomes usable: The plan screen gets Share text and Save photo. Text opens the phone's share sheet (clipboard on desktop); the photo is the plan drawn as an image card, shared or downloaded.
+  Why now: Learner chose to add content before shipping ("be able to share it"); lowest risk, so it comes first.
+  Build: `lib/share.ts` (`planText` pure + tested, `planImage` drawn on a canvas, no new dependency), share buttons on `PlanScreen`.
+  Verify (mechanical): `planText` unit tests (warm-up line, "No warm-up" skipped, sets × reps); `npm test` and `npm run build` pass.
+  Learner check: Share the text to a chat and save the photo from your phone. Does the image look like something you'd post?
+  Commit: `Add share as text and photo on the plan`
+
+- [ ] **7. Tap an exercise to see how to do it**
+  Becomes usable: Tapping a plan card slides up a detail sheet: name, muscle, sets × reps, a few form cues, and Watch on YouTube (a search for the exercise, so the link never breaks).
+  Build: cues per exercise in `data/howTo.ts`, `ExerciseSheet`, YouTube search URL helper.
+  Verify (mechanical): every exercise and warm-up has cues (test); `npm test` and `npm run build` pass.
+  Learner check: Open a few exercises; are the cues right and is the video search useful?
+  Commit: `Add exercise detail sheet with form cues and YouTube link`
+
+- [ ] **8. Experiment: animated how-to figure**
+  Becomes usable: An animated SVG figure in the detail sheet for 3 trial exercises (push-up, bodyweight squat, dumbbell curl), driven by pose keyframes. If the learner likes them, roll out to more; if not, keep YouTube only.
+  Build: `ExerciseFigure` (joint-angle poses, looping), poses for the 3 trial exercises.
+  Learner check: Do the figures read as the exercise? Keep, improve, or drop?
+  Commit: `Add animated exercise figure for trial exercises`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1: you try the case-opening roll so its feel can shape the warm-up and every later roll. Tried on desktop and phone (LAN); feedback applied: always spin despite OS reduced motion, tick + land sounds, steadier slowdown, winner pop-and-shake, glowing cases with a chest-style lid that opens before the roll and shows the muscle color after landing. Learner confirmed "looks good".
@@ -102,3 +123,4 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Added the "Reduce animations" toggle to the corner menu, moved in from the deferred list at the learner's request (`prd.md > Deferred From the POC` named a skip/fast-animations setting). When on, rolls slide onto the result in 0.6 s, reels stop in under 1 s, and flicker/pulse/slide effects stop; sounds stay. Saved in this browser only. The menu now also shows on Start and Plan (setting only; Start over stays on the roll screens).
 - Layout made consistent (learner request): the menu sits top right on every screen and Go is always bottom right, including the warm-up and cases screens, which now leave bottom room for it under the cases.
 - Final review: the bodyweight yes/no flag became a `where` tag (gym / home / any) on exercises and warm-ups, so Home and Gym each filter the right way, and the warm-up now follows the place too.
+- Added slices 6–8 before shipping (learner wants "more content" rather than shipping as is): share as text/photo, an exercise detail sheet with a YouTube search link, and an animated how-to figure experiment with YouTube as the fallback. Pulls "How-to per exercise" in from `prd.md > Deferred From the POC`.
