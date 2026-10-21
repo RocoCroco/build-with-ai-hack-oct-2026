@@ -152,11 +152,13 @@ export function ExerciseFigure({ id, muscle, still }: Props) {
       <g className={styles.scene}>
         {anim.scene?.map((shape, i) => <SceneShape key={i} shape={shape} />)}
       </g>
-      {/* Side view: the far side sits behind, offset and dimmed. Front view: both sides are equal. */}
-      <g className={j.front ? styles.body : styles.far} transform={j.front ? undefined : 'translate(5 0)'}>
-        {propsFor(props, 'far').map((p, i) => <PropMark key={i} prop={p} j={j} s={j.far} mirror={j.front} />)}
-        <Limbs s={j.far} focus={focus} />
-      </g>
+      {/* Side view: the far side sits behind the body, offset and dimmed. */}
+      {!j.front && (
+        <g className={styles.far} transform="translate(5 0)">
+          {propsFor(props, 'far').map((p, i) => <PropMark key={i} prop={p} j={j} s={j.far} mirror={false} />)}
+          <Limbs s={j.far} focus={focus} />
+        </g>
+      )}
       <g className={styles.body}>
         <Bone from={j.hip} to={j.shoulder} focus={focus.includes('torso')} />
         {j.front && (
@@ -166,6 +168,13 @@ export function ExerciseFigure({ id, muscle, still }: Props) {
           </>
         )}
         <circle className={styles.head} cx={j.head[0]} cy={j.head[1]} r={10} />
+        {/* Front view: both sides are equal and in front of the torso. */}
+        {j.front && (
+          <>
+            <Limbs s={j.far} focus={focus} />
+            {propsFor(props, 'far').map((p, i) => <PropMark key={i} prop={p} j={j} s={j.far} mirror />)}
+          </>
+        )}
         <Limbs s={j.near} focus={focus} />
         {propsFor(props, 'near').map((p, i) => <PropMark key={i} prop={p} j={j} s={j.near} mirror={false} />)}
       </g>

@@ -38,17 +38,6 @@ const ON_BACK: Pose = { hip: [130, 130], torso: -90, arm: { angles: [90, 90] }, 
 const FRONT_STAND: Pose = { view: 'front', hip: [120, 65], torso: 180, arm: { angles: [8, 5] }, leg: { at: [130, 131] } };
 const FRONT_SEATED: Pose = { ...FRONT_STAND, hip: [120, 100], leg: { at: [138, 131] } };
 const FRONT_SEAT: Shape[] = [{ rect: [104, 44, 32, 60] }, { rect: [94, 104, 52, 7] }, { line: [100, 111, 100, 134], w: 5 }, { line: [140, 111, 140, 134], w: 5 }];
-/** A push-up seen head-on: hands on the floor, the body running away from the camera. */
-const pushFront = (neckY: number, hand: Point): Pose => ({
-  view: 'front',
-  hip: [120, neckY - 20],
-  torso: 0,
-  torsoReach: 20 / 46,
-  arm: { at: hand, bend: -1 },
-  // The legs run off into the distance, narrowing toward the feet.
-  leg: { angles: [192, 192], reach: 0.35 },
-  foot: 192,
-});
 
 // Arms that ride along with the torso
 const TEMPLES: Limb = { rel: [-60, 91] };
@@ -139,7 +128,8 @@ export const FIGURES: Record<string, FigureAnim> = {
   'cable-crossover': {
     frames: rep(
       { ...FRONT_STAND, arm: { angles: [115, 110] }, leg: { at: [134, 131] } },
-      { ...FRONT_STAND, arm: { angles: [-25, -10] }, leg: { at: [134, 131] } },
+      // The hands meet in front of the body without crossing over.
+      { ...FRONT_STAND, arm: { angles: [-20, 0] }, leg: { at: [134, 131] } },
     ),
     props: cable([196, -36]),
     scene: [tower(40), tower(200)],
@@ -164,7 +154,7 @@ export const FIGURES: Record<string, FigureAnim> = {
   },
   'dips-chest': { frames: rep(dipTop(160, [106.3, 32.2]), dipTop(148, [105.6, 61])), scene: DIP_BARS },
   'push-up': { frames: rep(pushTop(), pushBottom()) },
-  'wide-push-up': { frames: rep(pushFront(96, [170, 132]), pushFront(116, [170, 132])) },
+  'wide-push-up': { frames: rep(pushTop([166, 132]), pushBottom([166, 132])) },
   'decline-push-up': {
     frames: rep(
       { ...straightFrom([52, 95], 97.4), arm: { at: [164, 132] }, foot: 'toes' },
@@ -317,16 +307,12 @@ export const FIGURES: Record<string, FigureAnim> = {
     scene: [{ line: [202, -46, 202, 134], w: 6 }],
   },
   'plank-shoulder-tap': {
-    frames: (() => {
-      const plank = pushFront(81, [136, 132]);
-      const planted: Limb = { at: [104, 132], bend: 1 };
-      return [
-        { pose: plank, move: 0.4, hold: 0.2 },
-        { pose: { ...plank, arm: { at: [108, 86], bend: -1 }, farArm: planted }, move: 0.4, hold: 0.2 },
-        { pose: plank, move: 0.4, hold: 0.2 },
-        { pose: { ...plank, farArm: { at: [132, 86], bend: 1 } }, move: 0.4, hold: 0.2 },
-      ];
-    })(),
+    frames: [
+      { pose: pushTop(), move: 0.4, hold: 0.2 },
+      { pose: { ...pushTop(), arm: { at: [152, 86] }, farArm: { at: PUSH_HANDS } }, move: 0.4, hold: 0.2 },
+      { pose: pushTop(), move: 0.4, hold: 0.2 },
+      { pose: { ...pushTop(), farArm: { at: [152, 86] } }, move: 0.4, hold: 0.2 },
+    ],
   },
 
   // Biceps
@@ -408,8 +394,7 @@ export const FIGURES: Record<string, FigureAnim> = {
     ),
     scene: bench(30, 90, 100),
   },
-  // Head-on, so the hands together under the chest are visible.
-  'diamond-push-up': { frames: rep(pushFront(82, [124, 132]), pushFront(108, [124, 132])) },
+  'diamond-push-up': { frames: rep(pushTop([158, 132]), pushBottom([158, 132])) },
   'triceps-dip': { frames: rep(dipTop(176, [119.2, 34.9]), dipTop(170, [118, 67.3])), scene: DIP_BARS },
 
   // Abs
