@@ -7,6 +7,7 @@ import { unlockAudio } from './lib/sound';
 import { CasesScreen } from './screens/CasesScreen';
 import { CountScreen } from './screens/CountScreen';
 import { EquipmentScreen } from './screens/EquipmentScreen';
+import { LibraryScreen } from './screens/LibraryScreen';
 import { MenuButton } from './screens/MenuButton';
 import { MuscleScreen } from './screens/MuscleScreen';
 import { PlanScreen } from './screens/PlanScreen';
@@ -19,8 +20,11 @@ const ROLL_STEPS: Step[] = ['warmup', 'count', 'cases'];
 export default function App() {
   const [state, dispatch] = useReducer(drawReducer, initialState);
   const [reduceAnimations, setReduceAnimations] = useState(loadReduceAnimations);
+  // The exercise library is a side trip from Start, outside the draw.
+  const [library, setLibrary] = useState(false);
 
   function renderScreen() {
+    if (library) return <LibraryScreen onBack={() => setLibrary(false)} />;
     switch (state.step) {
       case 'time':
         return <TimeScreen state={state} dispatch={dispatch} />;
@@ -51,7 +55,7 @@ export default function App() {
         {/* AnimatePresence stays mounted; each screen is keyed by its step. */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.main
-            key={state.step}
+            key={library ? 'library' : state.step}
             className={styles.screen}
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
@@ -69,6 +73,7 @@ export default function App() {
             saveReduceAnimations(on);
           }}
           onStartOver={ROLL_STEPS.includes(state.step) ? () => dispatch({ type: 'reset' }) : undefined}
+          onLibrary={state.step === 'start' && !library ? () => setLibrary(true) : undefined}
         />
       </div>
     </MotionConfig>

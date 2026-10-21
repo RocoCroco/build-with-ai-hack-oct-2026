@@ -7,10 +7,12 @@ interface Props {
   onReduceAnimations: (on: boolean) => void;
   /** Only during the rolls; leave out elsewhere. */
   onStartOver?: () => void;
+  /** Only on Start. */
+  onLibrary?: () => void;
 }
 
 /** The corner menu: the reduce-animations setting, and abandoning the draw during the rolls. */
-export function MenuButton({ reduceAnimations, onReduceAnimations, onStartOver }: Props) {
+export function MenuButton({ reduceAnimations, onReduceAnimations, onStartOver, onLibrary }: Props) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -66,6 +68,19 @@ export function MenuButton({ reduceAnimations, onReduceAnimations, onStartOver }
               </span>
               <span className={styles.note}>Rolls land fast instead of spinning</span>
             </button>
+            {onLibrary && (
+              <button
+                className={styles.item}
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  onLibrary();
+                }}
+              >
+                Exercise library
+                <span className={styles.note}>Every exercise and how to do it</span>
+              </button>
+            )}
             {onStartOver && (
               <button className={styles.item} role="menuitem" onClick={onStartOver}>
                 Start over

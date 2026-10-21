@@ -87,7 +87,7 @@ Build mode: learn
   Learner check: browse them in the library (slice 10) and flag any that look wrong.
   Commit: `Animate every exercise and warm-up`
 
-- [ ] **10. Exercise library from the Start menu**
+- [x] **10. Exercise library from the Start menu**
   Becomes usable: The corner menu on Start has Exercise library: every exercise and warm-up by group, each opening its how-to sheet. Easy to remove later (learner may drop or keep it).
   Build: `LibraryScreen`, menu item on Start, sheet reused with a sets/reps range instead of a drawn volume.
   Commit: `Add exercise library to the Start menu`

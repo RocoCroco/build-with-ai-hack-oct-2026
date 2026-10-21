@@ -119,7 +119,7 @@ Start screen, three setup screens (time wheel, body map, gym/home neon switch) w
 - **Equipment at home (dumbbells, bench, weights):** needs another choice and more exercise data.
 - **Skip / fast animations setting:** brought into the POC during the build as a "Reduce animations" switch in the corner menu (learner request).
 - **Checking off exercises during the workout:** from scope Later.
-- **How-to per exercise (video link, then custom animations):** from scope Later.
+- **How-to per exercise (video link, then custom animations):** brought into the POC after the build (learner request): tap a plan card for form cues, an animated figure, and a YouTube search; also browsable from an Exercise library in the Start menu. Sharing the plan as text or a photo was added at the same time.
 
 ## Possible Later Enhancements
 - **Gamble upgrade:** risk a result for a chance at a better or different exercise (e.g. 50% upgrade).
