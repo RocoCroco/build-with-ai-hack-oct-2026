@@ -4,6 +4,9 @@
 Don't know what to train today? Spin for it. Every exercise is revealed like a case opening,<br>
 then becomes a clean plan you can follow set by set.</p>
 
+<p align="center"><a href="https://workoutdraw.netlify.app"><b>▶ Try it live: workoutdraw.netlify.app</b></a><br>
+<sub>Best on a phone, or a phone-sized browser window.</sub></p>
+
 <p align="center">
   <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&labelColor=17181b">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white&labelColor=17181b">
