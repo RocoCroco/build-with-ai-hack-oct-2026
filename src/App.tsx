@@ -9,6 +9,7 @@ import { CasesScreen } from './screens/CasesScreen';
 import { CountScreen } from './screens/CountScreen';
 import { DoneScreen } from './screens/DoneScreen';
 import { EquipmentScreen } from './screens/EquipmentScreen';
+import { HistoryScreen } from './screens/HistoryScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
 import { MenuButton } from './screens/MenuButton';
 import { MuscleScreen } from './screens/MuscleScreen';
@@ -26,11 +27,12 @@ export default function App() {
   const [state, dispatch] = useReducer(drawReducer, null, () => resumeState(store.loadSession()) ?? initialState);
   useEffect(() => store.saveSession(state), [state]);
   const [reduceAnimations, setReduceAnimations] = useState(loadReduceAnimations);
-  // The exercise library is a side trip from Start, outside the draw.
-  const [library, setLibrary] = useState(false);
+  // The exercise library and the workout history are side trips from Start, outside the draw.
+  const [aside, setAside] = useState<'library' | 'history' | null>(null);
 
   function renderScreen() {
-    if (library) return <LibraryScreen onBack={() => setLibrary(false)} />;
+    if (aside === 'library') return <LibraryScreen onBack={() => setAside(null)} />;
+    if (aside === 'history') return <HistoryScreen onBack={() => setAside(null)} />;
     switch (state.step) {
       case 'time':
         return <TimeScreen state={state} dispatch={dispatch} />;
@@ -80,7 +82,7 @@ export default function App() {
         {/* AnimatePresence stays mounted; each screen is keyed by its step. */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.main
-            key={library ? 'library' : state.step}
+            key={aside ?? state.step}
             className={styles.screen}
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
@@ -98,7 +100,8 @@ export default function App() {
             saveReduceAnimations(on);
           }}
           onStartOver={ROLL_STEPS.includes(state.step) ? () => dispatch({ type: 'reset' }) : undefined}
-          onLibrary={state.step === 'start' && !library ? () => setLibrary(true) : undefined}
+          onLibrary={state.step === 'start' && !aside ? () => setAside('library') : undefined}
+          onHistory={state.step === 'start' && !aside ? () => setAside('history') : undefined}
         />
       </div>
     </MotionConfig>
