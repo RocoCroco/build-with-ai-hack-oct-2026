@@ -67,7 +67,7 @@ Build mode: learn
   Learner check: Share the text to a chat and save the photo from your phone. Does the image look like something you'd post?
   Commit: `Add share as text and photo on the plan`
 
-- [ ] **7. Tap an exercise to see how to do it**
+- [x] **7. Tap an exercise to see how to do it**
   Becomes usable: Tapping a plan card slides up a detail sheet: name, muscle, sets × reps, a few form cues, and Watch on YouTube (a search for the exercise, so the link never breaks).
   Build: cues per exercise in `data/howTo.ts`, `ExerciseSheet`, YouTube search URL helper.
   Verify (mechanical): every exercise and warm-up has cues (test); `npm test` and `npm run build` pass.

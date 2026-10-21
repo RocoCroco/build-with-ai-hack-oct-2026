@@ -1,8 +1,9 @@
 import { motion, type Variants } from 'motion/react';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { MUSCLE_LABELS } from '../data/exercises';
 import type { DrawState } from '../lib/drawState';
 import { planImage, planText, sharePhoto, shareText, type ShareResult } from '../lib/share';
+import { ExerciseSheet, type SheetItem } from './ExerciseSheet';
 import styles from './PlanScreen.module.css';
 
 interface Props {
@@ -28,6 +29,8 @@ type Kind = 'text' | 'photo';
 
 export function PlanScreen({ state, onNewDraw }: Props) {
   const { warmup } = state;
+  const [open, setOpen] = useState<SheetItem | null>(null);
+  const closeSheet = useCallback(() => setOpen(null), []);
   const [note, setNote] = useState<{ kind: Kind; text: string } | null>(null);
   const [busy, setBusy] = useState<Kind | null>(null);
   const noteTimer = useRef<number>(undefined);
@@ -53,30 +56,44 @@ export function PlanScreen({ state, onNewDraw }: Props) {
     return busy === kind ? '…' : idle;
   }
 
+  // The warm-up (unless "No warm-up") on top, then the exercises in the order they were drawn.
+  const items: SheetItem[] = [
+    ...(warmup && warmup !== 'none' ? [{ id: warmup.id, name: warmup.name, label: 'Warm-up' }] : []),
+    ...state.drawn.map(({ exercise, sets, reps }) => ({
+      id: exercise.id,
+      name: exercise.name,
+      label: MUSCLE_LABELS[exercise.muscle],
+      muscle: exercise.muscle,
+      volume: `${sets} × ${reps}`,
+    })),
+  ];
+
   return (
     <div className={styles.screen}>
       <h1 className={styles.title}>Your workout</h1>
       <motion.ol className={styles.list} variants={list} initial="hidden" animate="shown">
-        {warmup && warmup !== 'none' && (
-          <motion.li className={styles.card} data-warmup variants={card}>
-            <div>
-              <p className={styles.name}>{warmup.name}</p>
-              <p className={styles.muscle}>Warm-up</p>
-            </div>
-          </motion.li>
-        )}
-        {state.drawn.map(({ exercise, sets, reps }) => (
-          <motion.li key={exercise.id} className={styles.card} data-muscle={exercise.muscle} variants={card}>
-            <div>
-              <p className={styles.name}>{exercise.name}</p>
-              <p className={styles.muscle}>{MUSCLE_LABELS[exercise.muscle]}</p>
-            </div>
-            <p className={styles.volume}>
-              {sets} × {reps}
-            </p>
+        {items.map((item) => (
+          <motion.li key={item.id} variants={card}>
+            {/* Each card opens its how-to sheet. */}
+            <motion.button
+              className={styles.card}
+              data-muscle={item.muscle}
+              onClick={() => setOpen(item)}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div>
+                <p className={styles.name}>{item.name}</p>
+                <p className={styles.muscle}>{item.label}</p>
+              </div>
+              {item.volume && <p className={styles.volume}>{item.volume}</p>}
+              <span className={styles.chevron} aria-hidden>
+                ›
+              </span>
+            </motion.button>
           </motion.li>
         ))}
       </motion.ol>
+      <ExerciseSheet item={open} onClose={closeSheet} />
       <div className={styles.actions}>
         <div className={styles.shareRow}>
           <motion.button className={styles.share} onClick={() => share('text')} disabled={busy !== null} whileTap={{ scale: 0.96 }}>
