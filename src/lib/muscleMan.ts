@@ -79,7 +79,11 @@ export function manJoints(pose: ManPose): ManJoints {
 
 const STAND: ManPose = { y: 0, lean: 0, head: 0, arm: [12, 6], leg: [4, 0] };
 
-export const IDLE: ManPose[] = [STAND, { ...STAND, head: 3, arm: [16, 11] }];
+// Breathing in and out: a small bob, a shift of weight, and the arms swinging a little.
+export const IDLE: ManPose[] = [
+  { ...STAND, lean: -2, head: -3, arm: [8, 2] },
+  { ...STAND, y: 3, lean: 2, head: 4, arm: [22, 16] },
+];
 
 /** One pose per muscle group, held while that group lights up and grows. */
 export const FLEX: Record<Muscle, ManPose> = {
@@ -108,7 +112,7 @@ export interface Beat {
   feature?: Muscle; // the group lit up during this beat
 }
 
-export const IDLE_BEATS: Beat[] = IDLE.map((pose) => ({ pose, move: 1.7 }));
+export const IDLE_BEATS: Beat[] = IDLE.map((pose) => ({ pose, move: 1.4 }));
 export const DANCE_BEATS: Beat[] = [...DANCE_STEPS, ...DANCE_STEPS].map((pose) => ({ pose, move: 0.28, hold: 0.06 }));
 
 export function celebrateBeats(groups: readonly Muscle[]): Beat[] {

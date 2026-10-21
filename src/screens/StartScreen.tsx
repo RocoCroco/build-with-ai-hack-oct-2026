@@ -1,7 +1,6 @@
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { MUSCLES, type Muscle } from '../data/exercises';
-import { useReduceAnimations } from '../lib/motionPrefs';
 import { summarize } from '../lib/stats';
 import { store } from '../lib/storage';
 import type { WorkoutRecord } from '../lib/workout';
@@ -35,7 +34,6 @@ function loadStats() {
 export function StartScreen({ onStart }: { onStart: () => void }) {
   // Read once per visit to Start, so a workout finished just before shows up.
   const [stats] = useState(loadStats);
-  const reduce = useReduceAnimations();
   // The newest workout gets its celebration once.
   useEffect(() => {
     if (stats.last) store.saveCelebrated(stats.last.id);
@@ -53,7 +51,7 @@ export function StartScreen({ onStart }: { onStart: () => void }) {
         // Before the first workout: a skinny grey stickman and a nudge.
         <div className={styles.empty}>
           <div className={styles.emptyMan}>
-            <MuscleMan before={UNTRAINED} after={UNTRAINED} celebrate={[]} animate={!reduce} />
+            <MuscleMan before={UNTRAINED} after={UNTRAINED} celebrate={[]} animate />
           </div>
           <p className={styles.hint}>Finish a workout and watch him grow</p>
         </div>

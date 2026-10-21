@@ -1,6 +1,5 @@
 import { motion, type PanInfo } from 'motion/react';
 import { useLayoutEffect, useRef, useState } from 'react';
-import { useReduceAnimations } from '../lib/motionPrefs';
 import type { Muscle } from '../data/exercises';
 import { formatTotal, type Summary } from '../lib/stats';
 import { MuscleMan } from './MuscleMan';
@@ -17,7 +16,6 @@ interface Props {
 }
 
 export function StatsPanel({ summary, before, fresh }: Props) {
-  const reduce = useReduceAnimations();
   const [page, setPage] = useState(0);
   const viewport = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -51,7 +49,7 @@ export function StatsPanel({ summary, before, fresh }: Props) {
         >
           <div className={styles.page}>
             <div className={styles.man}>
-              <MuscleMan before={before} after={summary.perMuscle} celebrate={fresh} animate={!reduce} />
+              <MuscleMan before={before} after={summary.perMuscle} celebrate={fresh} animate />
             </div>
           </div>
           <div className={styles.page}>
@@ -61,7 +59,7 @@ export function StatsPanel({ summary, before, fresh }: Props) {
               before={before}
               after={summary.perMuscle}
               fresh={fresh}
-              play={page === 1 && !reduce}
+              play={page === 1}
             />
           </div>
         </motion.div>
