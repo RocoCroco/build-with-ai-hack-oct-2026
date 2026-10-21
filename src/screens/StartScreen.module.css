@@ -1,7 +1,9 @@
+/* Title, a flexible middle for the stats, and Start. The middle row gets whatever height is left,
+   so the stickman shrinks on short screens instead of pushing Start off the bottom. */
 .screen {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: var(--space-4);
   height: 100dvh;
   padding: var(--space-5) var(--space-4) var(--space-4);
@@ -24,18 +26,19 @@
 }
 
 .empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
   gap: var(--space-2);
   min-height: 0;
 }
 
 .emptyMan {
+  align-self: center;
   width: 100%;
-  height: 360px;
-  margin: auto 0;
+  height: 100%;
+  max-height: 330px;
+  padding-top: var(--space-5); /* headroom for raised arms */
 }
 
 .hint {

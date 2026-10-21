@@ -2,7 +2,8 @@ import { useRef, useState } from 'react';
 import { MUSCLES, type Muscle } from '../data/exercises';
 import {
   celebrateBeats,
-  DANCE_BEATS,
+  pickTapMove,
+  TAP_MOVES,
   IDLE,
   IDLE_BEATS,
   manJoints,
@@ -83,7 +84,7 @@ function popIn(t: number) {
 
 // ---- The figure ----
 
-type Mode = { kind: 'idle' | 'dance' | 'settle' | 'celebrate'; beats: Beat[]; start: number; from: ManPose };
+type Mode = { kind: 'idle' | 'tap' | 'settle' | 'celebrate'; beats: Beat[]; start: number; from: ManPose };
 
 interface Props {
   /** Sets per group before the newest workout (or the totals, when there's nothing new). */
@@ -141,8 +142,9 @@ export function MuscleMan({ before, after, celebrate, animate }: Props) {
       else mode.current = { kind: 'settle', beats: [{ pose: IDLE[0], move: 0.5 }], start: now, from: pose.current };
     } else {
       pose.current = result.pose;
-      feature = m.kind === 'celebrate' ? result.feature : undefined;
-      if (feature) grown.current.add(feature);
+      feature = m.kind === 'celebrate' || m.kind === 'tap' ? result.feature : undefined;
+      // Only the celebration grows a group; a tap pose just shows it off.
+      if (feature && m.kind === 'celebrate') grown.current.add(feature);
     }
     // Each group eases toward its size: the old one until its turn in the celebration, then the new.
     const shown = {} as Record<Muscle, number>;
@@ -153,10 +155,13 @@ export function MuscleMan({ before, after, celebrate, animate }: Props) {
     setFrame({ pose: pose.current, sizes: { ...sizes.current }, shown, feature, age: now - born.current, clock: now });
   });
 
-  function dance() {
+  // A tap sets off a random dance or pose (not while he's busy with one).
+  const lastMove = useRef(-1);
+  function tap() {
     const m = mode.current;
-    if (!animate || !m || m.kind === 'celebrate' || m.kind === 'dance') return;
-    mode.current = { kind: 'dance', beats: DANCE_BEATS, start: clock.current, from: pose.current };
+    if (!animate || !m || m.kind === 'celebrate' || m.kind === 'tap') return;
+    lastMove.current = pickTapMove(lastMove.current);
+    mode.current = { kind: 'tap', beats: TAP_MOVES[lastMove.current].beats, start: clock.current, from: pose.current };
   }
 
   // Without animation (or before the first frame) he stands still at his current size.
@@ -171,7 +176,7 @@ export function MuscleMan({ before, after, celebrate, animate }: Props) {
       })}
       feature={still ? undefined : frame.feature}
       pulse={still ? 1 : 1 + 0.25 * Math.sin(frame.clock * 7) ** 2}
-      onTap={animate ? dance : undefined}
+      onTap={animate ? tap : undefined}
     />
   );
 }
@@ -213,24 +218,28 @@ export function ManFigure({ pose, look, feature, pulse = 1, onTap }: FigureProps
   const bone = ([x1, y1]: Point, [x2, y2]: Point, key: string) => <line key={key} x1={x1} y1={y1} x2={x2} y2={y2} />;
 
   return (
-    <svg
-      className={styles.man}
-      viewBox="-10 -40 180 256"
-      role="img"
-      aria-label="Your muscle groups, bigger the more you've trained them. Tap him to dance."
-      onClick={onTap}
-      data-tappable={onTap ? true : undefined}
-    >
-      {BEHIND.map(group)}
-      <g className={styles.bones}>
-        {bone(j.hip, j.neck, 'spine')}
-        {bone(j.arms[0].root, j.arms[1].root, 'shoulders')}
-        {bone(j.legs[0].root, j.legs[1].root, 'hips')}
-        {j.arms.flatMap((a, i) => [bone(a.root, a.mid, `ua${i}`), bone(a.mid, a.end, `fa${i}`)])}
-        {j.legs.flatMap((l, i) => [bone(l.root, l.mid, `th${i}`), bone(l.mid, l.end, `sh${i}`), bone(l.end, j.feet[i], `ft${i}`)])}
-        <circle cx={j.head[0]} cy={j.head[1]} r={12} />
-      </g>
-      {FRONT.map(group)}
-    </svg>
+    // The drawing is placed absolutely in a box that takes its size from the page, so it always
+    // fits that box and never stretches the layout (which pushed Start off short screens).
+    <div className={styles.box}>
+      <svg
+        className={styles.man}
+        viewBox="-10 4 180 208"
+        role="img"
+        aria-label="Your muscle groups, bigger the more you've trained them. Tap him for a dance or a pose."
+        onClick={onTap}
+        data-tappable={onTap ? true : undefined}
+      >
+        {BEHIND.map(group)}
+        <g className={styles.bones}>
+          {bone(j.hip, j.neck, 'spine')}
+          {bone(j.arms[0].root, j.arms[1].root, 'shoulders')}
+          {bone(j.legs[0].root, j.legs[1].root, 'hips')}
+          {j.arms.flatMap((a, i) => [bone(a.root, a.mid, `ua${i}`), bone(a.mid, a.end, `fa${i}`)])}
+          {j.legs.flatMap((l, i) => [bone(l.root, l.mid, `th${i}`), bone(l.mid, l.end, `sh${i}`), bone(l.end, j.feet[i], `ft${i}`)])}
+          <circle cx={j.head[0]} cy={j.head[1]} r={12} />
+        </g>
+        {FRONT.map(group)}
+      </svg>
+    </div>
   );
 }

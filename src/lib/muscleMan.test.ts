@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MUSCLES } from '../data/exercises';
-import { beatsLength, celebrateBeats, DANCE_BEATS, FLEX, IDLE, IDLE_BEATS, manJoints, playBeats, type ManPose } from './muscleMan';
+import { beatsLength, celebrateBeats, FLEX, IDLE, IDLE_BEATS, manJoints, pickTapMove, playBeats, TAP_MOVES, type ManPose } from './muscleMan';
 
 // The stickman's viewBox is -10 -40 180 256.
 const VIEW = { left: -10, right: 170, top: -40, bottom: 216 };
@@ -11,7 +11,7 @@ function points(pose: ManPose) {
 }
 
 describe('stickman poses', () => {
-  const poses = [...IDLE, ...Object.values(FLEX), ...DANCE_BEATS.map((b) => b.pose)];
+  const poses = [...IDLE, ...Object.values(FLEX), ...TAP_MOVES.flatMap((m) => m.beats.map((b) => b.pose))];
 
   it('keep him inside his frame', () => {
     for (const pose of poses) {
@@ -49,5 +49,21 @@ describe('playBeats', () => {
 
   it('loops the idle forever', () => {
     expect(playBeats(IDLE_BEATS, IDLE[0], beatsLength(IDLE_BEATS) * 5.5, true)).not.toBeNull();
+  });
+});
+
+describe('tap moves', () => {
+  it('has 3 dances and 5 poses, and never picks the same one twice in a row', () => {
+    expect(TAP_MOVES.filter((m) => m.beats.every((b) => !b.feature))).toHaveLength(3);
+    expect(TAP_MOVES.filter((m) => m.beats.some((b) => b.feature))).toHaveLength(5);
+    for (let last = 0; last < TAP_MOVES.length; last++) {
+      for (const r of [0, 0.3, 0.6, 0.999]) {
+        const next = pickTapMove(last, () => r);
+        expect(next).not.toBe(last);
+        expect(next).toBeGreaterThanOrEqual(0);
+        expect(next).toBeLessThan(TAP_MOVES.length);
+      }
+    }
+    expect(pickTapMove(-1, () => 0.999)).toBe(TAP_MOVES.length - 1);
   });
 });

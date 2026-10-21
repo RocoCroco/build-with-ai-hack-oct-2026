@@ -12,10 +12,11 @@ const PAGES = ['Muscles', 'Balance'] as const;
 interface Props {
   summary: Summary;
   before: Record<Muscle, number>; // sets per group before the newest workout
-  fresh: readonly Muscle[]; // groups the newest workout trained, if not celebrated yet
+  gained: readonly Muscle[]; // groups the newest workout trained: "+sets" on the chart
+  celebrate: readonly Muscle[]; // the same, only if the stickman hasn't shown them off yet
 }
 
-export function StatsPanel({ summary, before, fresh }: Props) {
+export function StatsPanel({ summary, before, gained, celebrate }: Props) {
   const [page, setPage] = useState(0);
   const viewport = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -49,7 +50,7 @@ export function StatsPanel({ summary, before, fresh }: Props) {
         >
           <div className={styles.page}>
             <div className={styles.man}>
-              <MuscleMan before={before} after={summary.perMuscle} celebrate={fresh} animate />
+              <MuscleMan before={celebrate.length ? before : summary.perMuscle} after={summary.perMuscle} celebrate={celebrate} animate />
             </div>
           </div>
           <div className={styles.page}>
@@ -58,7 +59,7 @@ export function StatsPanel({ summary, before, fresh }: Props) {
               key={page === 1 ? 'shown' : 'hidden'}
               before={before}
               after={summary.perMuscle}
-              fresh={fresh}
+              fresh={gained}
               play={page === 1}
             />
           </div>

@@ -17,17 +17,20 @@ function groupsOf(record: WorkoutRecord): Muscle[] {
   return groups;
 }
 
-/** History, plus what the newest workout changed if Start hasn't shown it off yet. */
+/**
+ * History, and what the newest workout added: the Balance chart always shows those gains
+ * (until the next workout), while the stickman only celebrates them if the done screen
+ * didn't already (say the page was reloaded there).
+ */
 function loadStats() {
   const history = store.loadHistory();
   const last = history.at(-1);
-  const isNew = !!last && store.loadCelebrated() !== last.id;
-  const summary = summarize(history);
   return {
     last,
-    summary,
-    before: isNew ? summarize(history.slice(0, -1)).perMuscle : summary.perMuscle,
-    fresh: isNew && last ? groupsOf(last) : [],
+    summary: summarize(history),
+    before: summarize(history.slice(0, -1)).perMuscle,
+    gained: last ? groupsOf(last) : [],
+    celebrate: last && store.loadCelebrated() !== last.id ? groupsOf(last) : [],
   };
 }
 
@@ -46,7 +49,7 @@ export function StartScreen({ onStart }: { onStart: () => void }) {
         <p className={styles.tagline}>Randomize your routine</p>
       </div>
       {stats.summary.workouts > 0 ? (
-        <StatsPanel summary={stats.summary} before={stats.before} fresh={stats.fresh} />
+        <StatsPanel summary={stats.summary} before={stats.before} gained={stats.gained} celebrate={stats.celebrate} />
       ) : (
         // Before the first workout: a skinny grey stickman and a nudge.
         <div className={styles.empty}>

@@ -96,11 +96,26 @@ export const FLEX: Record<Muscle, ManPose> = {
   legs: { ...STAND, y: 19, arm: [45, 90], leg: [50, -12] }, // squat
 };
 
-const DANCE_STEPS: ManPose[] = [
+// Three dances, each a few steps played twice.
+const GROOVE: ManPose[] = [
   { ...STAND, y: 4, lean: -5, arm: [150, 170], farArm: [-30, -10] },
   { ...STAND, y: 0, lean: 5, arm: [30, 10], farArm: [-150, -170] },
   { ...STAND, y: 4, arm: [100, 160], farArm: [-100, -160], leg: [22, -6], farLeg: [-4, 0] },
   { ...STAND, y: 0, arm: [60, -30], farArm: [-60, 30], leg: [4, 0], farLeg: [-22, 6] },
+];
+
+const DISCO: ManPose[] = [
+  { ...STAND, y: 3, lean: -6, arm: [160, 165], farArm: [-25, -15], leg: [10, 0] },
+  { ...STAND, y: 0, lean: 0, arm: [60, 40], farArm: [-60, -40] },
+  { ...STAND, y: 3, lean: 6, arm: [25, 15], farArm: [-160, -165], farLeg: [-10, 0] },
+  { ...STAND, y: 0, lean: 0, arm: [60, 40], farArm: [-60, -40] },
+];
+
+const YMCA: ManPose[] = [
+  { ...STAND, arm: [150, 155] }, // Y
+  { ...STAND, y: 2, arm: [130, -110] }, // M: hands on the head
+  { ...STAND, lean: -4, arm: [100, 160], farArm: [-55, -115] }, // C
+  { ...STAND, arm: [165, -150] }, // A: hands meet overhead
 ];
 
 // ---- Timelines ----
@@ -113,7 +128,28 @@ export interface Beat {
 }
 
 export const IDLE_BEATS: Beat[] = IDLE.map((pose) => ({ pose, move: 1.4 }));
-export const DANCE_BEATS: Beat[] = [...DANCE_STEPS, ...DANCE_STEPS].map((pose) => ({ pose, move: 0.28, hold: 0.06 }));
+const dance = (steps: ManPose[], move: number, hold: number): Beat[] => [...steps, ...steps].map((pose) => ({ pose, move, hold }));
+/** A bodybuilding pose: snap into it, hold, with the group it shows off lit up. */
+const pose = (p: ManPose, feature: Muscle): Beat[] => [{ pose: p, move: 0.35, hold: 1.6, feature }];
+
+/** What a tap on the stickman can set off: 3 dances and 5 classic poses, picked at random. */
+export const TAP_MOVES: { name: string; beats: Beat[] }[] = [
+  { name: 'groove', beats: dance(GROOVE, 0.28, 0.06) },
+  { name: 'disco', beats: dance(DISCO, 0.3, 0.08) },
+  { name: 'ymca', beats: dance(YMCA, 0.3, 0.3) },
+  { name: 'front double biceps', beats: pose(FLEX.biceps, 'biceps') },
+  { name: 'front lat spread', beats: pose(FLEX.back, 'back') },
+  { name: 'most muscular', beats: pose(FLEX.chest, 'chest') },
+  { name: 'abs and thigh', beats: pose({ ...FLEX.abs, leg: [14, -6] }, 'abs') },
+  { name: 'victory', beats: pose({ ...STAND, y: -2, head: -5, arm: [158, 168] }, 'shoulders') },
+];
+
+/** A random tap move, never the same one twice in a row. */
+export function pickTapMove(last: number, random = Math.random): number {
+  if (last < 0) return Math.floor(random() * TAP_MOVES.length);
+  const i = Math.floor(random() * (TAP_MOVES.length - 1));
+  return i >= last ? i + 1 : i;
+}
 
 export function celebrateBeats(groups: readonly Muscle[]): Beat[] {
   return groups.map((m) => ({ pose: FLEX[m], move: 0.5, hold: 1.4, feature: m }));
