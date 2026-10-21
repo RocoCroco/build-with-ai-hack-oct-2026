@@ -105,7 +105,7 @@ Build mode: learn
   Learner check: do a short workout end to end, reload in the middle, and finish it.
   Commit: `Add workout mode that saves finished workouts`
 
-- [ ] **13. Stats on Start: a growing stickman and a 7-sided chart**
+- [x] **13. Stats on Start: a growing stickman and a 7-sided chart**
   Becomes usable: Start shows a stickman whose muscle groups grow with finished sets; swipe to a 7-sided chart of training balance per group, plus totals (workouts, time, sets).
   Commit: `Show training stats on the Start screen`
 

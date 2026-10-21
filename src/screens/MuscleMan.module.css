@@ -1,0 +1,26 @@
+.man {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bones line {
+  stroke: var(--chalk);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.bones circle {
+  fill: var(--chalk);
+}
+
+/* Untrained: a small grey bump. Trained: the group's plate color. */
+.group ellipse {
+  fill: var(--raised);
+  stroke: var(--floor);
+  stroke-width: 1.5;
+}
+
+.group[data-trained] ellipse {
+  fill: var(--m);
+}

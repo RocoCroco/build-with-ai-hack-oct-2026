@@ -2,22 +2,44 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: var(--space-6) var(--space-4) var(--space-5);
+  gap: var(--space-4);
+  height: 100dvh;
+  padding: var(--space-5) var(--space-4) var(--space-4);
 }
 
 .title {
   margin: 0;
+  padding-right: 48px; /* clear of the menu */
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 92px;
-  line-height: 0.88;
+  font-size: 58px;
+  line-height: 0.9;
   letter-spacing: -0.01em;
 }
 
 .tagline {
-  margin: var(--space-3) 0 0;
-  font-size: 20px;
+  margin: var(--space-2) 0 0;
+  font-size: 18px;
+  color: var(--chalk-dim);
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 0;
+}
+
+.emptyMan {
+  flex: 1;
+  width: 100%;
+  min-height: 200px;
+}
+
+.hint {
+  margin: 0;
   color: var(--chalk-dim);
 }
 
