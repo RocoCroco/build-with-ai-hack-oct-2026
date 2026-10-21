@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { Muscle } from '../data/exercises';
 import { CUES, youtubeSearchUrl } from '../data/howTo';
+import { ExerciseFigure } from './ExerciseFigure';
 import styles from './ExerciseSheet.module.css';
 
 export interface SheetItem {
@@ -66,6 +67,7 @@ export function ExerciseSheet({ item, onClose }: Props) {
               <h2 className={styles.name}>{item.name}</h2>
               {item.volume && <p className={styles.volume}>{item.volume}</p>}
             </div>
+            <ExerciseFigure id={item.id} />
             <ol className={styles.cues}>
               {CUES[item.id]?.map((cue) => (
                 <li key={cue}>{cue}</li>

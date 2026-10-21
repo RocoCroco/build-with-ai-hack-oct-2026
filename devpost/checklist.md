@@ -74,7 +74,7 @@ Build mode: learn
   Learner check: Open a few exercises; are the cues right and is the video search useful?
   Commit: `Add exercise detail sheet with form cues and YouTube link`
 
-- [ ] **8. Experiment: animated how-to figure**
+- [x] **8. Experiment: animated how-to figure**
   Becomes usable: An animated SVG figure in the detail sheet for 3 trial exercises (push-up, bodyweight squat, dumbbell curl), driven by pose keyframes. If the learner likes them, roll out to more; if not, keep YouTube only.
   Build: `ExerciseFigure` (joint-angle poses, looping), poses for the 3 trial exercises.
   Learner check: Do the figures read as the exercise? Keep, improve, or drop?

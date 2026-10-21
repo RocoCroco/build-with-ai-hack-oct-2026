@@ -1,0 +1,38 @@
+.figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 34dvh;
+  margin-top: var(--space-3);
+  border-radius: 14px;
+  background: var(--floor);
+}
+
+.floor {
+  stroke: var(--line);
+  stroke-width: 3;
+}
+
+.figure line {
+  stroke: var(--chalk);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.figure line[data-focus] {
+  stroke: var(--m, var(--plate));
+}
+
+.far {
+  opacity: 0.35;
+}
+
+.head {
+  fill: var(--chalk);
+}
+
+.weight {
+  fill: var(--raised);
+  stroke: var(--chalk-dim);
+  stroke-width: 3;
+}
