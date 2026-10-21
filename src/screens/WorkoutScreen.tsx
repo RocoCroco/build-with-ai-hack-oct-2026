@@ -23,6 +23,20 @@ function useNow() {
   return now;
 }
 
+/** A bold checkmark that draws itself in when a set is ticked. */
+function Check() {
+  return (
+    <svg className={styles.check} viewBox="0 0 24 24" aria-hidden>
+      <motion.path
+        d="M5 12.5l4.5 4.5L19 7.5"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+      />
+    </svg>
+  );
+}
+
 /** One exercise at a time: tick each set, then move on. The last one finishes the workout. */
 export function WorkoutScreen({ state, dispatch, onFinish }: Props) {
   const now = useNow();
@@ -96,7 +110,7 @@ export function WorkoutScreen({ state, dispatch, onFinish }: Props) {
                   animate={done ? { scale: [1, 1.18, 1] } : { scale: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {done ? '✓' : item.muscle ? set + 1 : 'Go'}
+                  {done ? <Check /> : item.muscle ? set + 1 : 'Go'}
                 </motion.button>
               );
             })}
