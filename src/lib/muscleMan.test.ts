@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { MUSCLES } from '../data/exercises';
 import { beatsLength, celebrateBeats, FLEX, IDLE, IDLE_BEATS, manJoints, pickTapMove, playBeats, TAP_MOVES, type ManPose } from './muscleMan';
 
-// The stickman's viewBox is -10 -40 180 256.
-const VIEW = { left: -10, right: 170, top: -40, bottom: 216 };
+// The stickman's viewBox is cropped tight (-10 4 180 208) and may overflow into the free space
+// around his box: about 25 units each side, and room above for raised arms.
+const VIEW = { left: -35, right: 195, top: -40, bottom: 216 };
 
 function points(pose: ManPose) {
   const j = manJoints(pose);

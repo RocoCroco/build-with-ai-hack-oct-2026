@@ -9,6 +9,7 @@ export type Point = [number, number];
 type Pair = [upper: number, lower: number];
 
 export interface ManPose {
+  x?: number; // whole body moved right (+) or left (-), for dances that travel
   y: number; // hips moved down (+) or up (-)
   lean: number; // torso tilt, degrees
   head: number; // head tilt, degrees
@@ -49,7 +50,7 @@ function limb(root: Point, [a1, a2]: Pair, l1: number, l2: number): Limb {
 const mirror = ([a, b]: Pair): Pair => [-a, -b];
 
 export function manJoints(pose: ManPose): ManJoints {
-  const hip = add(HIP, [0, 1], pose.y);
+  const hip = add(HIP, [pose.x ?? 0, pose.y]);
   const up = dir(180 + pose.lean);
   const across: Point = [-up[1], up[0]];
   const neck = add(hip, up, BONES.torso);
@@ -96,13 +97,19 @@ export const FLEX: Record<Muscle, ManPose> = {
   legs: { ...STAND, y: 19, arm: [45, 90], leg: [50, -12] }, // squat
 };
 
-// Three dances, each a few steps played twice.
-const GROOVE: ManPose[] = [
-  { ...STAND, y: 4, lean: -5, arm: [150, 170], farArm: [-30, -10] },
-  { ...STAND, y: 0, lean: 5, arm: [30, 10], farArm: [-150, -170] },
-  { ...STAND, y: 4, arm: [100, 160], farArm: [-100, -160], leg: [22, -6], farLeg: [-4, 0] },
-  { ...STAND, y: 0, arm: [60, -30], farArm: [-60, 30], leg: [4, 0], farLeg: [-22, 6] },
-];
+// Three dances.
+
+// Stanky leg: one knee rolls in and out, leaning back with loose arms, then the other leg.
+const stanky = (side: 1 | -1): ManPose[] => {
+  const loose: Pick<ManPose, 'lean' | 'y' | 'arm' | 'farArm'> = { lean: -4 * side, y: 4, arm: [45, 30], farArm: [-45, -30] };
+  const out: ManPose['leg'] = [30, -14]; // knee out
+  const inward: ManPose['leg'] = [-10, 12]; // knee in, across the other
+  const planted: ManPose['leg'] = [4, 0];
+  const bent = (leg: ManPose['leg']): ManPose =>
+    side === 1 ? { ...STAND, ...loose, leg, farLeg: [-planted[0], 0] } : { ...STAND, ...loose, leg: planted, farLeg: [-leg[0], -leg[1]] };
+  return [bent(out), bent(inward), bent(out), bent(inward)];
+};
+const STANKY: ManPose[] = [...stanky(1), ...stanky(-1)];
 
 const DISCO: ManPose[] = [
   { ...STAND, y: 3, lean: -6, arm: [160, 165], farArm: [-25, -15], leg: [10, 0] },
@@ -111,12 +118,19 @@ const DISCO: ManPose[] = [
   { ...STAND, y: 0, lean: 0, arm: [60, 40], farArm: [-60, -40] },
 ];
 
-const YMCA: ManPose[] = [
-  { ...STAND, arm: [150, 155] }, // Y
-  { ...STAND, y: 2, arm: [130, -110] }, // M: hands on the head
-  { ...STAND, lean: -4, arm: [100, 160], farArm: [-55, -115] }, // C
-  { ...STAND, arm: [165, -150] }, // A: hands meet overhead
-];
+// Griddy, travelling sideways: alternating heel kicks with pumping arms, and the hands-over-the-eyes
+// "glasses" on every third step. He drifts left, then comes back.
+const GLASSES: Pick<ManPose, 'arm' | 'farArm'> = { arm: [155, -67], farArm: [-155, 67] };
+const kick = (x: number, side: 1 | -1, glasses = false): ManPose => ({
+  ...STAND,
+  x,
+  y: side === 1 ? 2 : 0,
+  lean: 3 * side,
+  ...(glasses ? GLASSES : side === 1 ? { arm: [50, 110], farArm: [-20, -60] } : { arm: [20, 60], farArm: [-50, -110] }),
+  leg: side === 1 ? [24, 10] : [4, 0],
+  farLeg: side === 1 ? [-4, 0] : [-24, -10],
+});
+const GRIDDY: ManPose[] = [kick(-8, 1), kick(-16, -1), kick(-24, 1, true), kick(-16, -1), kick(-8, 1), kick(0, -1, true)];
 
 // ---- Timelines ----
 
@@ -134,9 +148,9 @@ const pose = (p: ManPose, feature: Muscle): Beat[] => [{ pose: p, move: 0.35, ho
 
 /** What a tap on the stickman can set off: 3 dances and 5 classic poses, picked at random. */
 export const TAP_MOVES: { name: string; beats: Beat[] }[] = [
-  { name: 'groove', beats: dance(GROOVE, 0.28, 0.06) },
+  { name: 'stanky leg', beats: STANKY.map((pose) => ({ pose, move: 0.32, hold: 0.04 })) },
   { name: 'disco', beats: dance(DISCO, 0.3, 0.08) },
-  { name: 'ymca', beats: dance(YMCA, 0.3, 0.3) },
+  { name: 'griddy', beats: dance(GRIDDY, 0.24, 0.04) },
   { name: 'front double biceps', beats: pose(FLEX.biceps, 'biceps') },
   { name: 'front lat spread', beats: pose(FLEX.back, 'back') },
   { name: 'most muscular', beats: pose(FLEX.chest, 'chest') },
@@ -160,6 +174,7 @@ const lerpPair = (a: Pair, b: Pair, t: number): Pair => [lerp(a[0], b[0], t), le
 
 export function lerpManPose(a: ManPose, b: ManPose, t: number): ManPose {
   return {
+    x: lerp(a.x ?? 0, b.x ?? 0, t),
     y: lerp(a.y, b.y, t),
     lean: lerp(a.lean, b.lean, t),
     head: lerp(a.head, b.head, t),
