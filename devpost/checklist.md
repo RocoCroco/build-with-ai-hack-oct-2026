@@ -109,19 +109,19 @@ Build mode: learn
   Becomes usable: Start shows a stickman whose muscle groups grow with finished sets; swipe to a 7-sided chart of training balance per group, plus totals (workouts, time, sets).
   Commit: `Show training stats on the Start screen`
 
-- [ ] **14. Polish pass on the new screens**
+- [x] **14. Polish pass on the new screens**
   Commit: `Polish workout and stats animations`
 
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1: you try the case-opening roll so its feel can shape the warm-up and every later roll. Tried on desktop and phone (LAN); feedback applied: always spin despite OS reduced motion, tick + land sounds, steadier slowdown, winner pop-and-shake, glowing cases with a chest-style lid that opens before the roll and shows the muscle color after landing. Learner confirmed "looks good".
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
-- [ ] Warm-up respects gym/home: machine, rope and band warm-ups only at the gym (learner found Rowing machine etc. at home)
-- [ ] Gym drops home workarounds (Towel door curl, Loaded backpack curl, Inverted table row) but keeps good bodyweight moves; Concentration curl added so gym biceps still has 8
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Warm-up respects gym/home: machine, rope and band warm-ups only at the gym (learner found Rowing machine etc. at home)
+- [x] Gym drops home workarounds (Towel door curl, Loaded backpack curl, Inverted table row) but keeps good bodyweight moves; Concentration curl added so gym biceps still has 8
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
