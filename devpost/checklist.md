@@ -132,7 +132,7 @@ Build mode: learn
 Activity and evidence: Focused alternative tied to the stated goal (choosing and creating good skills). Took the real stickman failure (stills looked right; the loop had stopped after ~5 frames, fixed in `src/lib/useFrameLoop.ts`) and wrote the procedure that caught it as a project skill, `.claude/skills/animation-check/` (`SKILL.md` + `scripts/probe.mjs`). The learner decided the trigger (only when the user reports an animation isn't working, trading a round trip for fewer checks), the "verified" bar (positions sampled over real time, real taps, screenshots as support only), and the name. Tested once on the stickman: arm x2 moved 114.1 → 116.5 → 114.7 → 112.0 while idle, a real tap at 3.2 s set off a move (x2 137.1 at 3.8 s). The test exposed a gap (probing before the dev server answered); a wait-for-200 step was added.
 Route and stops: Reference route only (not toured interactively), in the app map: `src/screens/MuscleMan.tsx` `tap()` → `src/lib/muscleMan.ts` `TAP_MOVES` / `pickTapMove` / `playBeats` → `src/lib/useFrameLoop.ts` `useFrameLoop`.
 Edit outcome: Kept: the new `animation-check` skill (no app code changed), committed f664240.
-Reflection: Offered (optional transfer question at hand-off).
+Reflection: Offered and answered; the answer is kept in the ignored learner profile.
 Activity mode: Focused alternative, with the skill tested against the live dev server over CDP.
 
 ## Revisions
