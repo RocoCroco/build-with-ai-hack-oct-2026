@@ -1,7 +1,4 @@
-<!-- Banner: save the generated banner as docs/banner.png and uncomment the next line. -->
-<!-- <p align="center"><img src="docs/banner.png" alt="Workout Draw" width="100%"></p> -->
-
-<h1 align="center">Workout Draw</h1>
+<p align="center"><img src="docs/banner.jpg" alt="Workout Draw: randomize your workout" width="100%"></p>
 
 <p align="center"><b>Randomize your routine.</b><br>
 Don't know what to train today? Spin for it. Every exercise is revealed like a case opening,<br>
