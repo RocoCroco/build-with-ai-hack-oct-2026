@@ -29,6 +29,28 @@
   stroke-width: 2;
 }
 
+/* Corners that just grew pulse in their color */
+.dot[data-grew] {
+  filter: drop-shadow(0 0 5px var(--m));
+  animation: pulse 1.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.35);
+  }
+}
+
+[data-reduce-motion] .dot[data-grew] {
+  animation: none;
+}
+
+.gain {
+  fill: var(--m);
+}
+
 .label {
   fill: var(--m);
   font-family: var(--font-display);

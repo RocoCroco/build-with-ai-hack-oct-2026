@@ -1,6 +1,7 @@
 import { motion, type PanInfo } from 'motion/react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useReduceAnimations } from '../lib/motionPrefs';
+import type { Muscle } from '../data/exercises';
 import { formatTotal, type Summary } from '../lib/stats';
 import { MuscleMan } from './MuscleMan';
 import { RadarChart } from './RadarChart';
@@ -9,7 +10,13 @@ import styles from './StatsPanel.module.css';
 const PAGES = ['Muscles', 'Balance'] as const;
 
 /** The Start screen's stats: swipe (or tap the tabs) between the stickman and the chart. */
-export function StatsPanel({ summary }: { summary: Summary }) {
+interface Props {
+  summary: Summary;
+  before: Record<Muscle, number>; // sets per group before the newest workout
+  fresh: readonly Muscle[]; // groups the newest workout trained, if not celebrated yet
+}
+
+export function StatsPanel({ summary, before, fresh }: Props) {
   const reduce = useReduceAnimations();
   const [page, setPage] = useState(0);
   const viewport = useRef<HTMLDivElement>(null);
@@ -52,11 +59,19 @@ export function StatsPanel({ summary }: { summary: Summary }) {
           transition={{ type: 'spring', stiffness: 320, damping: 34 }}
         >
           <div className={styles.page}>
-            <MuscleMan perMuscle={summary.perMuscle} animate={!reduce} />
+            <div className={styles.man}>
+              <MuscleMan before={before} after={summary.perMuscle} celebrate={fresh} animate={!reduce} />
+            </div>
           </div>
           <div className={styles.page}>
             {/* Re-keyed so the chart grows again each time it's shown */}
-            <RadarChart key={page === 1 ? 'shown' : 'hidden'} perMuscle={summary.perMuscle} play={page === 1 && !reduce} />
+            <RadarChart
+              key={page === 1 ? 'shown' : 'hidden'}
+              before={before}
+              after={summary.perMuscle}
+              fresh={fresh}
+              play={page === 1 && !reduce}
+            />
           </div>
         </motion.div>
       </div>

@@ -10,10 +10,14 @@ export interface Store {
   saveSession(state: DrawState): void;
   loadHistory(): WorkoutRecord[];
   addWorkout(record: WorkoutRecord): void;
+  /** The last finished workout the Start screen has already celebrated. */
+  loadCelebrated(): string | null;
+  saveCelebrated(id: string): void;
 }
 
 const SESSION = 'workout-draw:session:v1';
 const HISTORY = 'workout-draw:history:v1';
+const CELEBRATED = 'workout-draw:celebrated:v1';
 
 function read<T>(key: string): T | null {
   try {
@@ -45,6 +49,8 @@ export const localStore: Store = {
     const history = localStore.loadHistory().filter((r) => r.id !== record.id);
     write(HISTORY, [...history, record]);
   },
+  loadCelebrated: () => read<string>(CELEBRATED),
+  saveCelebrated: (id) => write(CELEBRATED, id),
 };
 
 export const store: Store = localStore;

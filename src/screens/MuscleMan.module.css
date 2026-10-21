@@ -2,6 +2,11 @@
   display: block;
   width: 100%;
   height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.man[data-tappable] {
+  cursor: pointer;
 }
 
 .bones line {
@@ -19,8 +24,18 @@
   fill: var(--raised);
   stroke: var(--floor);
   stroke-width: 1.5;
+  transition: opacity 0.3s ease-out;
 }
 
 .group[data-trained] ellipse {
   fill: var(--m);
+}
+
+/* During the celebration: the posed group glows, the rest step back. */
+.group[data-featured] {
+  filter: drop-shadow(0 0 6px var(--m));
+}
+
+.group[data-dim] ellipse {
+  opacity: 0.35;
 }
