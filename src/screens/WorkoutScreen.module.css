@@ -1,0 +1,132 @@
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--continue-room);
+}
+
+/* Leaves the top-right corner to the menu */
+.top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-right: 52px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.count {
+  font-size: 18px;
+  color: var(--chalk-dim);
+}
+
+.timer {
+  margin-left: auto;
+  font-size: 30px;
+}
+
+.progress {
+  display: flex;
+  gap: 4px;
+}
+
+.progress span {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--raised);
+  transition: background 0.3s ease-out;
+}
+
+.progress span[data-state='now'] {
+  background: var(--chalk-dim);
+}
+
+.progress span[data-state='done'] {
+  background: var(--m, var(--plate));
+}
+
+.exercise {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  margin: var(--space-2) 0 0;
+  color: var(--m, var(--plate));
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.name {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 38px;
+  line-height: 1.02;
+}
+
+.volume {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--chalk-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  margin: var(--space-3) 0 var(--space-2);
+  text-align: center;
+  color: var(--chalk-dim);
+}
+
+.sets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.set {
+  width: 64px;
+  height: 64px;
+  border: 3px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--chalk);
+  transition:
+    background 0.2s ease-out,
+    border-color 0.2s ease-out;
+}
+
+.set[data-done] {
+  border-color: var(--m, var(--plate));
+  background: var(--m, var(--plate));
+  color: var(--m-ink, var(--plate-ink));
+}
+
+.previous {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-3);
+  height: 64px;
+  padding: 0 var(--space-3);
+  border: none;
+  background: none;
+  color: var(--chalk-dim);
+  font-size: 16px;
+}
+
+/* The warm-up has no group, so it keeps the accent rather than the current exercise's color */
+.progress span:not([data-muscle])[data-state='done'] {
+  background: var(--plate);
+}

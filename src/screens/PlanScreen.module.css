@@ -95,3 +95,7 @@
 .share:disabled {
   cursor: default;
 }
+
+.startWorkout {
+  width: 100%;
+}

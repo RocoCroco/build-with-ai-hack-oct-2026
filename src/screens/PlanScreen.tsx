@@ -9,6 +9,7 @@ import styles from './PlanScreen.module.css';
 interface Props {
   state: DrawState;
   onNewDraw: () => void;
+  onStartWorkout: () => void;
 }
 
 // The cards deal in one after another, warm-up first.
@@ -27,7 +28,7 @@ const NOTES: Partial<Record<ShareResult, string>> = { copied: 'Copied!', saved: 
 
 type Kind = 'text' | 'photo';
 
-export function PlanScreen({ state, onNewDraw }: Props) {
+export function PlanScreen({ state, onNewDraw, onStartWorkout }: Props) {
   const { warmup } = state;
   const [open, setOpen] = useState<SheetItem | null>(null);
   const closeSheet = useCallback(() => setOpen(null), []);
@@ -71,6 +72,16 @@ export function PlanScreen({ state, onNewDraw }: Props) {
   return (
     <div className={styles.screen}>
       <h1 className={styles.title}>Your workout</h1>
+      <motion.button
+        className={`primary ${styles.startWorkout}`}
+        onClick={onStartWorkout}
+        whileTap={{ scale: 0.97 }}
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 380, damping: 28 }}
+      >
+        Start workout
+      </motion.button>
       <motion.ol className={styles.list} variants={list} initial="hidden" animate="shown">
         {items.map((item) => (
           <motion.li key={item.id} variants={card}>
@@ -103,7 +114,7 @@ export function PlanScreen({ state, onNewDraw }: Props) {
             {label('photo', 'Save photo')}
           </motion.button>
         </div>
-        <button className="primary" onClick={onNewDraw}>
+        <button className={styles.share} onClick={onNewDraw}>
           New draw
         </button>
       </div>

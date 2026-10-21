@@ -92,6 +92,26 @@ Build mode: learn
   Build: `LibraryScreen`, menu item on Start, sheet reused with a sets/reps range instead of a drawn volume.
   Commit: `Add exercise library to the Start menu`
 
+- [x] **11. A reload doesn't lose the draw**
+  Becomes usable: Refreshing the page comes back to the same screen. Setup, the plan, and a workout in progress are kept; a roll that was mid-animation starts over (its results are re-drawn).
+  Build: `lib/storage.ts` — one `store` object (session + history) on localStorage, the single place to swap for Supabase later; `resumeState` in `drawState.ts`; App loads and saves the session.
+  Verify (mechanical): tests for `resumeState` (roll steps rewind, plan kept, unknown exercise ids drop the session); `npm test` and `npm run build` pass.
+  Commit: `Keep the draw across reloads`
+
+- [x] **12. Workout mode: tick off every set, then save the workout**
+  Becomes usable: Start workout on the plan walks through each exercise (warm-up first) with its figure; tap each set to tick it, Next unlocks when all sets are done; a timer runs. Finish saves the workout (date, time taken, sets per exercise) to this device's history and shows a done screen.
+  Build: `lib/workout.ts` (run, record, duration format), `workout`/`done` steps in the reducer, `WorkoutScreen`, `DoneScreen`, Start workout on `PlanScreen`.
+  Verify (mechanical): reducer tests (Next blocked until sets done, finish produces a record with the right sets per muscle); `npm test` and `npm run build` pass.
+  Learner check: do a short workout end to end, reload in the middle, and finish it.
+  Commit: `Add workout mode that saves finished workouts`
+
+- [ ] **13. Stats on Start: a growing stickman and a 7-sided chart**
+  Becomes usable: Start shows a stickman whose muscle groups grow with finished sets; swipe to a 7-sided chart of training balance per group, plus totals (workouts, time, sets).
+  Commit: `Show training stats on the Start screen`
+
+- [ ] **14. Polish pass on the new screens**
+  Commit: `Polish workout and stats animations`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1: you try the case-opening roll so its feel can shape the warm-up and every later roll. Tried on desktop and phone (LAN); feedback applied: always spin despite OS reduced motion, tick + land sounds, steadier slowdown, winner pop-and-shake, glowing cases with a chest-style lid that opens before the roll and shows the muscle color after landing. Learner confirmed "looks good".
@@ -137,3 +157,4 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Final review: the bodyweight yes/no flag became a `where` tag (gym / home / any) on exercises and warm-ups, so Home and Gym each filter the right way, and the warm-up now follows the place too.
 - Added slices 6–8 before shipping (learner wants "more content" rather than shipping as is): share as text/photo, an exercise detail sheet with a YouTube search link, and an animated how-to figure experiment with YouTube as the fallback. Pulls "How-to per exercise" in from `prd.md > Deferred From the POC`.
 - Learner review of the figures: added a front/back view (shoulder and hip width, mirrored left side) for jumping jacks, cable crossover, seated dumbbell press, Arnold press, lateral and cable lateral raises; pull-up and lat pulldown are seen from behind; the hammer curl's dumbbell is drawn across the hand. The exercise library stays on the Start menu (learner decision). Head-on push-ups (wide, diamond, shoulder taps) were tried and reverted to the side view: without depth they read as handstands.
+- Slices 11 and 12 landed in one commit (they share the reducer). The PRD's "nothing persists" non-goal is lifted: the session and finished workouts are kept on this device; an online database (Supabase) stays possible later behind `lib/storage.ts`.

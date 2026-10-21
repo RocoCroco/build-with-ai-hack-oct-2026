@@ -1,7 +1,8 @@
-import type { Muscle, Place, Warmup } from '../data/exercises';
+import { EXERCISES, WARMUPS, type Muscle, type Place, type Warmup } from '../data/exercises';
 import { exerciseCountFor, planCounts, poolFor, type DrawnExercise } from './draw';
+import { isComplete, startRun, tapSet, type WorkoutRecord, type WorkoutRun } from './workout';
 
-export type Step = 'start' | 'time' | 'muscles' | 'place' | 'warmup' | 'count' | 'cases' | 'plan';
+export type Step = 'start' | 'time' | 'muscles' | 'place' | 'warmup' | 'count' | 'cases' | 'plan' | 'workout' | 'done';
 
 export interface DrawState {
   step: Step;
@@ -15,6 +16,9 @@ export interface DrawState {
   // revealed as you go:
   warmup: Warmup | 'none' | null;
   drawn: DrawnExercise[];
+  // doing the workout:
+  run: WorkoutRun | null;
+  finished: WorkoutRecord | null; // shown on the done screen
 }
 
 export type Action =
@@ -25,6 +29,10 @@ export type Action =
   | { type: 'setPlace'; place: Place }
   | { type: 'revealWarmup'; warmup: Warmup | 'none' }
   | { type: 'revealExercise'; drawn: DrawnExercise }
+  | { type: 'startWorkout'; now: number }
+  | { type: 'tapSet'; set: number }
+  | { type: 'goTo'; index: number }
+  | { type: 'finishWorkout'; record: WorkoutRecord }
   | { type: 'next' }
   | { type: 'back' }
   | { type: 'reset' };
@@ -39,6 +47,8 @@ export const initialState: DrawState = {
   counts: {},
   warmup: null,
   drawn: [],
+  run: null,
+  finished: null,
 };
 
 /**
@@ -54,6 +64,10 @@ function lockDraw(state: DrawState): DrawState {
   const counts = planCounts(state.muscles, total, state.place);
   const locked = Object.values(counts).reduce((a, b) => a + b, 0);
   return { ...state, step: 'warmup', total: locked, counts, warmup: null, drawn: [] };
+}
+
+function updateRun(state: DrawState, change: (run: WorkoutRun) => WorkoutRun): DrawState {
+  return state.step === 'workout' && state.run ? { ...state, run: change(state.run) } : state;
 }
 
 export function drawReducer(state: DrawState, action: Action): DrawState {
@@ -77,6 +91,23 @@ export function drawReducer(state: DrawState, action: Action): DrawState {
       return { ...state, warmup: action.warmup };
     case 'revealExercise':
       return { ...state, drawn: [...state.drawn, action.drawn] };
+    case 'startWorkout':
+      return state.step === 'plan' ? { ...state, step: 'workout', run: startRun(state.warmup, state.drawn, action.now) } : state;
+    case 'tapSet':
+      return updateRun(state, (run) => ({
+        ...run,
+        items: run.items.map((item, i) => (i === run.index ? tapSet(item, action.set) : item)),
+      }));
+    case 'goTo':
+      // Moving on needs the current exercise finished; going back is always fine.
+      return updateRun(state, (run) => {
+        const forward = action.index > run.index;
+        if (action.index < 0 || action.index >= run.items.length) return run;
+        if (forward && !isComplete(run.items[run.index])) return run;
+        return { ...run, index: action.index };
+      });
+    case 'finishWorkout':
+      return state.run?.items.every(isComplete) ? { ...state, step: 'done', run: null, finished: action.record } : state;
     case 'next':
       switch (state.step) {
         case 'time':
@@ -105,4 +136,31 @@ export function drawReducer(state: DrawState, action: Action): DrawState {
     case 'reset':
       return initialState;
   }
+}
+
+/**
+ * A saved session, ready to continue after a reload. The roll screens keep their animation
+ * progress on screen only, so a roll that was underway starts over: the warm-up roll clears
+ * its result, and the cases clear theirs. Exercises are looked up again by id, so a session
+ * saved by an older version with exercises that no longer exist is dropped.
+ */
+export function resumeState(saved: DrawState | null): DrawState | null {
+  if (!saved || typeof saved !== 'object' || !saved.step) return null;
+  const drawn: DrawnExercise[] = [];
+  for (const d of saved.drawn ?? []) {
+    const exercise = EXERCISES.find((e) => e.id === d.exercise?.id);
+    if (!exercise) return null;
+    drawn.push({ ...d, exercise });
+  }
+  let warmup = saved.warmup;
+  if (warmup && warmup !== 'none') {
+    const id = warmup.id;
+    warmup = WARMUPS.find((w) => w.id === id) ?? null;
+    if (!warmup) return null;
+  }
+  const state: DrawState = { ...initialState, ...saved, warmup, drawn };
+  if (state.step === 'warmup') return { ...state, warmup: null };
+  if (state.step === 'cases') return { ...state, drawn: [] };
+  if (state.step === 'workout' && !state.run) return { ...state, step: 'plan' };
+  return state;
 }

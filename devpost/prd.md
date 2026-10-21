@@ -128,7 +128,7 @@ Start screen, three setup screens (time wheel, body map, gym/home neon switch) w
 
 ## Non-Goals
 - **Workout optimization or progression tracking:** it's meant to be fun, not a training program.
-- **Accounts, saved history, or sync:** nothing persists in this version.
+- **Accounts or sync:** no sign-in; history is kept on this device only (moved in after the build at the learner's request). An online store such as Supabase may come later.
 - **Energy level input:** cut in scope; you go at your own pace.
 - **Re-rolls:** results are final for now (see gamble upgrade later).
 - **Rest timing:** people rest as they like; the plan doesn't prescribe it.
