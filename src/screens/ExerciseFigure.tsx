@@ -1,8 +1,8 @@
-import { useAnimationFrame } from 'motion/react';
 import { useState } from 'react';
 import type { Muscle } from '../data/exercises';
 import { FIGURES, type JointName, type Prop, type Segment, type Shape } from '../data/figures';
 import { add, dir, distance, joints, poseAt, type Joints, type Point, type Side } from '../lib/figure';
+import { useFrameLoop } from '../lib/useFrameLoop';
 import styles from './ExerciseFigure.module.css';
 
 const FLOOR = 134;
@@ -130,8 +130,8 @@ interface Props {
 export function ExerciseFigure({ id, muscle, still }: Props) {
   const anim = FIGURES[id];
   const [seconds, setSeconds] = useState(0);
-  useAnimationFrame((ms) => {
-    if (anim && !still) setSeconds(ms / 1000);
+  useFrameLoop((s) => {
+    if (anim && !still) setSeconds(s);
   });
   if (!anim) return null;
 

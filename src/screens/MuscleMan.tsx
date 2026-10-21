@@ -1,4 +1,3 @@
-import { useAnimationFrame } from 'motion/react';
 import { useRef, useState } from 'react';
 import { MUSCLES, type Muscle } from '../data/exercises';
 import {
@@ -15,6 +14,7 @@ import {
   type Point,
 } from '../lib/muscleMan';
 import { growth } from '../lib/stats';
+import { useFrameLoop } from '../lib/useFrameLoop';
 import styles from './MuscleMan.module.css';
 
 // ---- Where each muscle sits on the skeleton ----
@@ -120,9 +120,8 @@ export function MuscleMan({ before, after, celebrate, animate }: Props) {
     mode.current = { kind: 'idle', beats: IDLE_BEATS, start: now - IDLE_BEATS[0].move, from: IDLE[0] };
   }
 
-  useAnimationFrame((ms) => {
+  useFrameLoop((now) => {
     if (!animate) return;
-    const now = ms / 1000;
     const dt = Math.min(0.1, now - clock.current);
     clock.current = now;
     if (born.current === null) {
@@ -171,7 +170,7 @@ export function MuscleMan({ before, after, celebrate, animate }: Props) {
         pop: !animate ? 1 : still ? 0 : popIn((frame.age - 0.1 - ORDER.indexOf(m) * POP_STAGGER) / POP_TIME),
       })}
       feature={still ? undefined : frame.feature}
-      pulse={still ? 1 : 1 + 0.1 * Math.sin(frame.clock * 9) ** 2}
+      pulse={still ? 1 : 1 + 0.25 * Math.sin(frame.clock * 7) ** 2}
       onTap={animate ? dance : undefined}
     />
   );

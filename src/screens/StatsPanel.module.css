@@ -6,53 +6,17 @@
   min-height: 0;
 }
 
-.tabs {
-  align-self: center;
-  display: flex;
-  padding: 4px;
-  border-radius: 999px;
-  background: var(--surface);
-}
-
-.tab {
-  position: relative;
-  padding: 6px var(--space-3);
-  border: none;
-  background: none;
-  color: var(--chalk-dim);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 16px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.tab[aria-selected='true'] {
-  color: var(--plate-ink);
-}
-
-/* The sliding highlight behind the active tab */
-.pill {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: var(--plate);
-}
-
-.tabLabel {
-  position: relative;
-}
-
 .viewport {
   flex: 1;
+  display: flex; /* so the track, and each page, fill the full height */
   min-height: 220px;
   overflow: hidden;
   touch-action: pan-y;
 }
 
 .track {
+  flex: 1;
   display: flex;
-  height: 100%;
   cursor: grab;
 }
 
@@ -66,7 +30,6 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
   padding: var(--space-2) var(--space-3);
 }
 
@@ -92,9 +55,32 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Keeps the stickman modest on tall screens */
+/* Keeps the stickman modest on tall screens; the drawing centres itself in this box */
 .man {
-  height: 100%;
-  max-height: 250px;
-  margin: 0 auto;
+  width: 100%;
+  height: 290px; /* a fixed height, so the drawing scales into it instead of overflowing */
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: calc(var(--space-2) * -1);
+}
+
+/* A comfortable tap target around a small dot */
+.dot {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+}
+
+.dotFill {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--chalk);
 }

@@ -39,15 +39,6 @@ export function StatsPanel({ summary, before, fresh }: Props) {
 
   return (
     <section className={styles.panel} aria-label="Your training">
-      <div className={styles.tabs} role="tablist">
-        {PAGES.map((name, i) => (
-          <button key={name} role="tab" aria-selected={page === i} className={styles.tab} onClick={() => setPage(i)}>
-            {page === i && <motion.span layoutId="stats-tab" className={styles.pill} transition={{ type: 'spring', stiffness: 500, damping: 36 }} />}
-            <span className={styles.tabLabel}>{name}</span>
-          </button>
-        ))}
-      </div>
-
       <div ref={viewport} className={styles.viewport}>
         <motion.div
           className={styles.track}
@@ -74,6 +65,20 @@ export function StatsPanel({ summary, before, fresh }: Props) {
             />
           </div>
         </motion.div>
+      </div>
+
+      {/* Carousel dots: the current page's dot stretches into a short bar */}
+      <div className={styles.dots} role="tablist" aria-label="Stats pages">
+        {PAGES.map((name, i) => (
+          <button key={name} role="tab" aria-selected={page === i} aria-label={name} className={styles.dot} onClick={() => setPage(i)}>
+            <motion.span
+              className={styles.dotFill}
+              initial={false}
+              animate={{ width: page === i ? 22 : 8, opacity: page === i ? 1 : 0.35 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+            />
+          </button>
+        ))}
       </div>
 
       <dl className={styles.totals}>
