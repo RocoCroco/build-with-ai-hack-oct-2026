@@ -57,6 +57,16 @@
   stroke-width: 1.5;
 }
 
+.figure .bar {
+  stroke: var(--chalk-dim);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.weight line {
+  stroke-width: 3;
+}
+
 .figure .lever {
   stroke: var(--line);
   stroke-width: 5;

@@ -7,6 +7,8 @@ export type JointName = 'hand' | 'elbow' | 'knee' | 'ankle' | 'toe' | 'shoulder'
 /** Equipment that moves with the body. Hand-held props show on both sides unless `near`. */
 export type Prop =
   | { kind: 'dumbbell' | 'barbell' | 'handle' | 'wheel' | 'bag' | 'pad'; at: JointName; near?: boolean; nudge?: Point }
+  | { kind: 'dumbbell-across'; at: 'hand'; near?: boolean } // seen along its bar, square to the forearm
+  | { kind: 'bar'; at: 'hand' } // a straight bar between both hands (front view)
   | { kind: 'cable' | 'lever'; from: Point; to: JointName; near?: boolean }
   | { kind: 'plate'; at: JointName; angle: number; length: number };
 
@@ -31,6 +33,22 @@ const ON_BENCH: Pose = { hip: [140, 100], torso: -90, arm: { angles: [180, 180] 
 const INCLINE: Pose = { hip: [132, 100], torso: -135, arm: { angles: [0, 0] }, leg: { at: [172, 131] } };
 /** Face up on the floor, head on the left, knees bent. */
 const ON_BACK: Pose = { hip: [130, 130], torso: -90, arm: { angles: [90, 90] }, leg: { at: [176, 131] } };
+
+// Facing the camera (or showing the back). Limbs are set for the right of the screen.
+const FRONT_STAND: Pose = { view: 'front', hip: [120, 65], torso: 180, arm: { angles: [8, 5] }, leg: { at: [130, 131] } };
+const FRONT_SEATED: Pose = { ...FRONT_STAND, hip: [120, 100], leg: { at: [138, 131] } };
+const FRONT_SEAT: Shape[] = [{ rect: [104, 44, 32, 60] }, { rect: [94, 104, 52, 7] }, { line: [100, 111, 100, 134], w: 5 }, { line: [140, 111, 140, 134], w: 5 }];
+/** A push-up seen head-on: hands on the floor, the body running away from the camera. */
+const pushFront = (neckY: number, hand: Point): Pose => ({
+  view: 'front',
+  hip: [120, neckY - 20],
+  torso: 0,
+  torsoReach: 20 / 46,
+  arm: { at: hand, bend: -1 },
+  // The legs run off into the distance, narrowing toward the feet.
+  leg: { angles: [192, 192], reach: 0.35 },
+  foot: 192,
+});
 
 // Arms that ride along with the torso
 const TEMPLES: Limb = { rel: [-60, 91] };
@@ -120,11 +138,11 @@ export const FIGURES: Record<string, FigureAnim> = {
   },
   'cable-crossover': {
     frames: rep(
-      { hip: [116, 67], torso: 165, arm: { angles: [110, 100], reach: 0.45 }, leg: { at: [134, 131] }, farLeg: { at: [98, 127] }, farFoot: 'toes' },
-      { hip: [116, 67], torso: 165, arm: { angles: [45, 45] }, leg: { at: [134, 131] }, farLeg: { at: [98, 127] }, farFoot: 'toes' },
+      { ...FRONT_STAND, arm: { angles: [115, 110] }, leg: { at: [134, 131] } },
+      { ...FRONT_STAND, arm: { angles: [-25, -10] }, leg: { at: [134, 131] } },
     ),
-    props: cable([110, -40]),
-    scene: [tower(108)],
+    props: cable([196, -36]),
+    scene: [tower(40), tower(200)],
   },
   'chest-press-machine': {
     frames: rep({ ...SEATED, arm: { at: [126, 58] } }, { ...SEATED, arm: { at: [158, 56] } }),
@@ -146,7 +164,7 @@ export const FIGURES: Record<string, FigureAnim> = {
   },
   'dips-chest': { frames: rep(dipTop(160, [106.3, 32.2]), dipTop(148, [105.6, 61])), scene: DIP_BARS },
   'push-up': { frames: rep(pushTop(), pushBottom()) },
-  'wide-push-up': { frames: rep(pushTop([166, 132]), pushBottom([166, 132])) },
+  'wide-push-up': { frames: rep(pushFront(96, [170, 132]), pushFront(116, [170, 132])) },
   'decline-push-up': {
     frames: rep(
       { ...straightFrom([52, 95], 97.4), arm: { at: [164, 132] }, foot: 'toes' },
@@ -166,12 +184,10 @@ export const FIGURES: Record<string, FigureAnim> = {
     props: BARBELL,
   },
   'lat-pulldown': {
-    frames: rep(
-      { hip: [118, 100], torso: 188, arm: { at: [119, 4] }, leg: { at: [158, 131] } },
-      { hip: [118, 100], torso: 188, arm: { at: [122, 50] }, leg: { at: [158, 131] } },
-    ),
-    props: cable([119, -42]),
-    scene: [...bench(98, 140), { line: [96, -44, 96, 134], w: 6 }, { line: [96, -42, 124, -42], w: 5 }],
+    // Seen from behind, so the back is what you watch.
+    frames: rep({ ...FRONT_SEATED, arm: { at: [158, 8] } }, { ...FRONT_SEATED, arm: { at: [154, 44] } }),
+    props: [{ kind: 'cable', from: [120, -42], to: 'hand' }, { kind: 'bar', at: 'hand' }],
+    scene: [...FRONT_SEAT.slice(1), { circle: [120, -42, 4] }, { line: [120, -46, 120, -42], w: 4 }],
   },
   'barbell-row': {
     frames: rep(
@@ -211,7 +227,15 @@ export const FIGURES: Record<string, FigureAnim> = {
     props: cable([182, -40]),
     scene: [tower(184)],
   },
-  'pull-up': { frames: rep(pullDown, pullUp, 1.1), scene: HIGH_BAR },
+  // Seen from behind: wide grip, elbows driving down.
+  'pull-up': {
+    frames: rep(
+      { ...FRONT_STAND, hip: [120, 58], arm: { at: [156, -34] }, leg: { at: [126, 124] } },
+      { ...FRONT_STAND, hip: [120, 28], arm: { at: [156, -34] }, leg: { at: [126, 94] } },
+      1.1,
+    ),
+    scene: [{ line: [60, -34, 180, -34], w: 5 }, { line: [64, -34, 64, 134], w: 4 }, { line: [176, -34, 176, 134], w: 4 }],
+  },
   'superman': {
     frames: hold(
       { hip: [100, 130], torso: 90, arm: { angles: [90, 90] }, leg: { angles: [-90, -90] }, foot: -90 },
@@ -240,17 +264,18 @@ export const FIGURES: Record<string, FigureAnim> = {
   // Shoulders
   'ohp': { frames: rep({ ...STAND, arm: { at: [130, 20] } }, { ...STAND, arm: { at: [121, -32] } }), props: BARBELL },
   'db-shoulder-press': {
-    frames: rep({ ...SEATED, arm: { at: [118, 46] } }, { ...SEATED, arm: { at: [110, 3] } }),
-    props: DUMBBELLS,
-    scene: [...bench(86, 130), backrest(101, 104, 101, 40)],
+    frames: rep({ ...FRONT_SEATED, arm: { angles: [90, 180] } }, { ...FRONT_SEATED, arm: { angles: [160, 178] } }),
+    props: [{ kind: 'dumbbell-across', at: 'hand' }],
+    scene: FRONT_SEAT,
   },
   'lateral-raise': {
-    frames: rep({ ...STAND, arm: { angles: [3, 3] } }, { ...STAND, arm: { angles: [80, 82], reach: 0.35 } }),
+    frames: rep({ ...FRONT_STAND, arm: { angles: [8, 5] } }, { ...FRONT_STAND, arm: { angles: [88, 86] } }),
     props: DUMBBELLS,
   },
   'cable-lateral': {
-    frames: rep({ ...STAND, arm: { angles: [3, 3] } }, { ...STAND, arm: { angles: [80, 82], reach: 0.35 } }),
-    props: cable([126, 126]),
+    // The cable comes from the low pulley on the other side, across the body.
+    frames: rep({ ...FRONT_STAND, arm: { angles: [8, 5] } }, { ...FRONT_STAND, arm: { angles: [88, 86] } }),
+    props: cable([104, 128]),
   },
   'rear-delt-flye': {
     frames: rep(
@@ -268,9 +293,15 @@ export const FIGURES: Record<string, FigureAnim> = {
     scene: [tower(192)],
   },
   'arnold-press': {
-    frames: rep({ ...SEATED, arm: { at: [122, 40] } }, { ...SEATED, arm: { at: [110, 3] } }),
-    props: DUMBBELLS,
-    scene: [...bench(86, 130), backrest(101, 104, 101, 40)],
+    // Starts like the top of a curl, elbows in front; they open out to the sides, then press.
+    frames: [
+      { pose: { ...FRONT_SEATED, arm: { angles: [-10, 190], reach: [0.5, 1] } }, move: 0.6, hold: 0.4 },
+      { pose: { ...FRONT_SEATED, arm: { angles: [90, 180] } }, move: 0.6 },
+      { pose: { ...FRONT_SEATED, arm: { angles: [160, 178] } }, move: 0.6, hold: 0.3 },
+      { pose: { ...FRONT_SEATED, arm: { angles: [90, 180] } }, move: 0.6 },
+    ],
+    props: [{ kind: 'dumbbell-across', at: 'hand' }],
+    scene: FRONT_SEAT,
   },
   'pike-push-up': {
     frames: rep(
@@ -286,18 +317,25 @@ export const FIGURES: Record<string, FigureAnim> = {
     scene: [{ line: [202, -46, 202, 134], w: 6 }],
   },
   'plank-shoulder-tap': {
-    frames: [
-      { pose: pushTop(), move: 0.4, hold: 0.2 },
-      { pose: { ...pushTop(), arm: { at: [152, 86] }, farArm: { at: PUSH_HANDS } }, move: 0.4, hold: 0.2 },
-      { pose: pushTop(), move: 0.4, hold: 0.2 },
-      { pose: { ...pushTop(), farArm: { at: [152, 86] } }, move: 0.4, hold: 0.2 },
-    ],
+    frames: (() => {
+      const plank = pushFront(81, [136, 132]);
+      const planted: Limb = { at: [104, 132], bend: 1 };
+      return [
+        { pose: plank, move: 0.4, hold: 0.2 },
+        { pose: { ...plank, arm: { at: [108, 86], bend: -1 }, farArm: planted }, move: 0.4, hold: 0.2 },
+        { pose: plank, move: 0.4, hold: 0.2 },
+        { pose: { ...plank, farArm: { at: [132, 86], bend: 1 } }, move: 0.4, hold: 0.2 },
+      ];
+    })(),
   },
 
   // Biceps
   'barbell-curl': { frames: rep(curlDown, curlUp, 0.9, 1.1), props: BARBELL },
   'db-curl': { frames: rep(curlDown, curlUp, 0.9, 1.1), props: DUMBBELLS },
-  'hammer-curl': { frames: rep(curlDown, { ...STAND, arm: { angles: [5, 145] } }, 0.9, 1.1), props: DUMBBELLS },
+  'hammer-curl': {
+    frames: rep(curlDown, { ...STAND, arm: { angles: [5, 145] } }, 0.9, 1.1),
+    props: [{ kind: 'dumbbell-across', at: 'hand' }],
+  },
   'preacher-curl': {
     frames: rep(
       { hip: [104, 96], torso: 172, arm: { angles: [45, 40] }, leg: { at: [140, 131] } },
@@ -370,7 +408,8 @@ export const FIGURES: Record<string, FigureAnim> = {
     ),
     scene: bench(30, 90, 100),
   },
-  'diamond-push-up': { frames: rep(pushTop([158, 132]), pushBottom([158, 132])) },
+  // Head-on, so the hands together under the chest are visible.
+  'diamond-push-up': { frames: rep(pushFront(82, [124, 132]), pushFront(108, [124, 132])) },
   'triceps-dip': { frames: rep(dipTop(176, [119.2, 34.9]), dipTop(170, [118, 67.3])), scene: DIP_BARS },
 
   // Abs
@@ -547,12 +586,15 @@ export const FIGURES: Record<string, FigureAnim> = {
 
   // Warm-ups
   'jumping-jacks': {
-    frames: [
-      { pose: STAND, move: 0.25, hold: 0.05 },
-      { pose: { ...STAND, hip: [119, 60], arm: { angles: [90, 90], reach: 0.15 }, leg: { at: [120, 126] }, foot: 50 }, move: 0.2 },
-      { pose: { ...STAND, arm: { angles: [178, 178] } }, move: 0.2, hold: 0.05 },
-      { pose: { ...STAND, hip: [119, 60], arm: { angles: [90, 90], reach: 0.15 }, leg: { at: [120, 126] }, foot: 50 }, move: 0.2 },
-    ],
+    frames: (() => {
+      const air: Pose = { ...FRONT_STAND, hip: [120, 58], arm: { angles: [90, 95] }, leg: { at: [140, 122] } };
+      return [
+        { pose: { ...FRONT_STAND, arm: { angles: [10, 8] } }, move: 0.2, hold: 0.05 },
+        { pose: air, move: 0.18 },
+        { pose: { ...FRONT_STAND, hip: [120, 68], arm: { angles: [170, 175] }, leg: { at: [148, 131] } }, move: 0.18, hold: 0.05 },
+        { pose: air, move: 0.2 },
+      ];
+    })(),
   },
   'jump-rope': {
     frames: [
