@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { EXERCISES } from '../data/exercises';
+import { EXERCISES, WARMUPS } from '../data/exercises';
 import { FIGURES } from '../data/figures';
-import { distance, joints, LENGTHS, loopLength, poseAt, solveLimb } from './figure';
+import { distance, joints, LENGTHS, loopLength, poseAt, solveLimb, type Limb, type Point } from './figure';
 
 const FLOOR = 134;
-const VIEW = { left: 20, right: 220, top: -24 };
+const VIEW = { left: 20, right: 220, top: -46 };
 
 describe('solveLimb', () => {
   it('reaches a target in range and keeps both bone lengths', () => {
@@ -18,24 +18,42 @@ describe('solveLimb', () => {
     const [, end] = solveLimb([0, 0], { at: [0, 200] }, 27, 25, 1);
     expect(end[1]).toBeCloseTo(52, 1);
   });
+
+  it('turns relative angles with the torso and shortens with reach', () => {
+    const [, end] = solveLimb([0, 0], { rel: [180, 180], reach: 0.5 }, 27, 25, 1, 180);
+    expect(end[1]).toBeCloseTo(26); // torso up, so rel 180 points down
+  });
 });
 
 describe('figures', () => {
+  it('covers every exercise and warm-up, and nothing else', () => {
+    const ids = [...EXERCISES, ...WARMUPS].map((x) => x.id);
+    expect(ids.filter((id) => !FIGURES[id])).toEqual([]);
+    expect(Object.keys(FIGURES).filter((id) => !ids.includes(id))).toEqual([]);
+  });
+
   for (const [id, anim] of Object.entries(FIGURES)) {
-    it(`${id}: is a real exercise, stays in frame, and planted hands/feet stay put`, () => {
-      expect(EXERCISES.some((e) => e.id === id)).toBe(true);
+    it(`${id}: stays in frame and above the floor, and planted hands/feet stay put`, () => {
       const length = loopLength(anim.frames);
+      expect(length).toBeGreaterThan(0);
       for (let s = 0; s < length; s += length / 120) {
         const pose = poseAt(anim.frames, s);
         const j = joints(pose);
-        for (const [x, y] of Object.values(j)) {
-          expect(x).toBeGreaterThanOrEqual(VIEW.left);
-          expect(x).toBeLessThanOrEqual(VIEW.right);
-          expect(y).toBeGreaterThanOrEqual(VIEW.top + LENGTHS.head);
-          expect(y).toBeLessThanOrEqual(FLOOR);
+        const points: Point[] = [j.hip, j.shoulder, j.head, ...Object.values(j.near), ...Object.values(j.far)];
+        for (const [x, y] of points) {
+          expect(x, `${id} x at ${s.toFixed(2)}s`).toBeGreaterThanOrEqual(VIEW.left);
+          expect(x, `${id} x at ${s.toFixed(2)}s`).toBeLessThanOrEqual(VIEW.right);
+          expect(y, `${id} y at ${s.toFixed(2)}s`).toBeGreaterThanOrEqual(VIEW.top + LENGTHS.head);
+          expect(y, `${id} y at ${s.toFixed(2)}s`).toBeLessThanOrEqual(FLOOR);
         }
-        if ('at' in pose.leg) expect(distance(j.ankle, pose.leg.at)).toBeLessThan(1.5);
-        if ('at' in pose.arm) expect(distance(j.hand, pose.arm.at)).toBeLessThan(1.5);
+        // Feet are planted exactly; hands may drift a little while carrying a moving bar.
+        const reaches = (limb: Limb | undefined, end: Point, slack: number) => {
+          if (limb && 'at' in limb) expect(distance(end, limb.at), `${id} reach at ${s.toFixed(2)}s`).toBeLessThan(slack);
+        };
+        reaches(pose.leg, j.near.ankle, 1.5);
+        reaches(pose.arm, j.near.hand, 3);
+        reaches(pose.farLeg, j.far.ankle, 1.5);
+        reaches(pose.farArm, j.far.hand, 3);
       }
     });
   }

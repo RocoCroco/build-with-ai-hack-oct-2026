@@ -67,7 +67,7 @@ export function ExerciseSheet({ item, onClose }: Props) {
               <h2 className={styles.name}>{item.name}</h2>
               {item.volume && <p className={styles.volume}>{item.volume}</p>}
             </div>
-            <ExerciseFigure id={item.id} />
+            <ExerciseFigure id={item.id} muscle={item.muscle} />
             <ol className={styles.cues}>
               {CUES[item.id]?.map((cue) => (
                 <li key={cue}>{cue}</li>

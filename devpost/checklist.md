@@ -80,6 +80,18 @@ Build mode: learn
   Learner check: Do the figures read as the exercise? Keep, improve, or drop?
   Commit: `Add animated exercise figure for trial exercises`
 
+- [x] **9. Animated figures for every exercise and warm-up**
+  Becomes usable: Every plan card's sheet shows its exercise moving, with simple equipment (benches, bars, cables, machines).
+  Build: extend `lib/figure.ts` (separate near/far limbs, torso-relative arms, foreshortened reach, foot angle, linear keyframes) and the figure props; poses for all exercises and warm-ups in `data/figures.ts`.
+  Verify (mechanical): test that every exercise and warm-up has a figure that stays in frame with planted hands/feet in place; contact-sheet render checked by eye; `npm test` and `npm run build` pass.
+  Learner check: browse them in the library (slice 10) and flag any that look wrong.
+  Commit: `Animate every exercise and warm-up`
+
+- [ ] **10. Exercise library from the Start menu**
+  Becomes usable: The corner menu on Start has Exercise library: every exercise and warm-up by group, each opening its how-to sheet. Easy to remove later (learner may drop or keep it).
+  Build: `LibraryScreen`, menu item on Start, sheet reused with a sets/reps range instead of a drawn volume.
+  Commit: `Add exercise library to the Start menu`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1: you try the case-opening roll so its feel can shape the warm-up and every later roll. Tried on desktop and phone (LAN); feedback applied: always spin despite OS reduced motion, tick + land sounds, steadier slowdown, winner pop-and-shake, glowing cases with a chest-style lid that opens before the roll and shows the muscle color after landing. Learner confirmed "looks good".

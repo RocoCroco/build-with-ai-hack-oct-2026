@@ -8,18 +8,28 @@
   background: var(--floor);
 }
 
+/* Library thumbnails: small, no frame */
+.figure[data-still] {
+  width: 56px;
+  height: 52px;
+  margin: 0;
+  border-radius: 8px;
+}
+
 .floor {
   stroke: var(--line);
   stroke-width: 3;
 }
 
-.figure line {
+.body line,
+.far line {
   stroke: var(--chalk);
   stroke-width: 7;
   stroke-linecap: round;
 }
 
-.figure line[data-focus] {
+.body line[data-focus],
+.far line[data-focus] {
   stroke: var(--m, var(--plate));
 }
 
@@ -31,8 +41,38 @@
   fill: var(--chalk);
 }
 
+/* Equipment stays quiet so the body reads first */
+.scene line {
+  stroke: var(--line);
+  stroke-linecap: round;
+}
+
+.scene rect,
+.scene circle {
+  fill: var(--line);
+}
+
+.figure .cable {
+  stroke: var(--chalk-dim);
+  stroke-width: 1.5;
+}
+
+.figure .lever {
+  stroke: var(--line);
+  stroke-width: 5;
+}
+
 .weight {
   fill: var(--raised);
   stroke: var(--chalk-dim);
   stroke-width: 3;
+}
+
+.hub {
+  fill: var(--chalk-dim);
+  stroke: none;
+}
+
+.pad {
+  fill: var(--line);
 }
