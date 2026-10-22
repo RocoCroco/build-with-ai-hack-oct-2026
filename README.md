@@ -108,3 +108,9 @@ The project also includes a custom Claude Code skill, [`animation-check`](.claud
 - Optional online sync (e.g. Supabase) behind the existing storage interface
 - Home workouts with equipment (dumbbells, a bench)
 - A "gamble" upgrade: risk a result for a chance at a different exercise
+
+## License
+
+Copyright (C) 2026 Roc Cutal
+
+Workout Draw is free software: you can redistribute it and/or modify it under the terms of the [GNU Affero General Public License](LICENSE) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
